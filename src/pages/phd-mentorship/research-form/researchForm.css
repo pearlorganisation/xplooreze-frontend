@@ -1,0 +1,216 @@
+.research-root {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.research-root .side-bar {
+  display: flex;
+  flex-direction: column;
+  width: 36%;
+  height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.research-root .side-bar .back-icon {
+  color: black;
+  margin-right: auto;
+  margin-left: var(--space-6);
+  margin-top: var(--space-6);
+  padding: var(--space-2);
+  background-color: rgba(128, 128, 128, 0.127);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.research-root .side-bar video {
+  height: 60%;
+  width: 60%;
+  object-fit: contain;
+  margin: auto;
+  margin-right: 0;
+}
+
+.login-app-logo {
+  width: 35%;
+  aspect-ratio: 3 / 1;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.research-root .authentication-container {
+  display: flex;
+  align-items: center;
+  width: 70%;
+}
+
+.research-root .authentication-box {
+  width: 100%;
+  max-width: 500px;
+  margin: var(--space-2) auto;
+}
+
+.research-root .authentication-container h2 {
+  font-size: var(--font-size-lg);
+  color: var(--brand-black);
+  text-align: center;
+  padding: 0;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.research-root .authentication-box .form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.research-root .authentication-box .form-group label {
+  color: #333;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.research-root .authentication-box .form-group label.required::after {
+  content: ' *';
+  color: #ff2626;
+}
+
+.research-root .authentication-box .form-group input,
+.research-root .authentication-box .form-group textarea,
+.research-root .authentication-box .form-group select {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.research-root .authentication-box .form-group input:focus,
+.research-root .authentication-box .form-group textarea:focus,
+.research-root .authentication-box .form-group select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px rgba(107, 190, 68, 0.4);
+  outline: none;
+  background: #fff;
+}
+
+.research-root .authentication-box select[multiple] {
+  width: 100%;
+  min-height: 100px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+  overflow-y: auto;
+}
+
+.research-root .authentication-box select[multiple] option {
+  padding: 4px;
+}
+
+.research-root .actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.research-root .submit-btn,
+.research-root .back-btn {
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.research-root .submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  flex: 1;
+}
+
+.research-root .submit-btn:hover {
+  opacity: 0.9;
+}
+
+.research-root .back-btn {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  flex: 1;
+}
+
+.research-root .back-btn:hover {
+  background-color: #ccc;
+}
+
+@media (min-width: 769px) {
+  .research-root .actions {
+    flex-direction: row;
+  }
+}
+
+.research-root .success-page {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.research-root .success-page h2 {
+  color: var(--primary-color);
+}
+
+.research-root .calendar-links {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.research-root .calendar-btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .research-root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .research-root .side-bar {
+    display: none;
+  }
+
+  .research-root .authentication-container {
+    width: 80%;
+    margin: auto;
+  }
+
+  .research-root .login-app-logo {
+    width: 45%;
+    aspect-ratio: 3 / 1;
+    object-fit: contain;
+  }
+
+  .research-root .calendar-links {
+    flex-direction: column;
+  }
+}

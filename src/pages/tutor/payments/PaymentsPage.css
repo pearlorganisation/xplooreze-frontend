@@ -1,0 +1,370 @@
+/* * =========================================
+ * FINAL ISOLATED STYLES FOR PAYMENTS PAGE
+ * v3 - Fixes label/value inline alignment
+ * =========================================
+ */
+.payments-page-root {
+  display: flex;
+  min-height: 100vh;
+  font-family: var(--font-family);
+  background-color: var(--brand-white);
+}
+
+.payments-page-root .payments-main {
+  flex: 1;
+  background-color: #f8f9fa;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.payments-page-root .topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-1) var(--space-6);
+  background-color: #f8f9fa;
+  margin-bottom: var(--space-6);
+}
+
+.payments-page-root .menu-toggle {
+  display: none;
+  font-size: 2rem;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.payments-page-root .topbar .title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  text-align: left;
+}
+
+.payments-page-root .loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  gap: var(--space-2);
+}
+
+.payments-page-root .loading-icon {
+  font-size: 3rem;
+  color: var(--primary-color);
+  animation: payments-page-spin 1s linear infinite;
+}
+
+@keyframes payments-page-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.payments-page-root .error-card {
+  background-color: #fef2f2;
+  color: #dc2626;
+  padding: var(--space-4);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid #dc2626;
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+/* * =========================================
+ * BALANCE CARD STYLES (CORRECTED V3)
+ * =========================================
+ */
+.payments-page-root .balance-card {
+  background: var(--brand-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--space-4);
+  text-align: center;
+  /* For the main balance */
+}
+
+.payments-page-root .balance-main h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.payments-page-root .balance-label {
+  color: #6b7280;
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--space-2) 0;
+}
+
+/* --- THIS IS THE CORRECTED SECTION --- */
+.payments-page-root .balance-breakdown {
+  display: flex;
+  align-items: center;
+  /* Vertically center the items */
+  justify-content: space-between;
+  /* Pushes the two items to the edges */
+  padding-top: var(--space-2);
+  border-top: 1px solid #e5e7eb;
+  gap: var(--space-4);
+}
+
+.payments-page-root .breakdown-item {
+  display: flex;
+  /* This makes the label and value inline */
+  align-items: center;
+  /* Aligns label and value vertically */
+  /* These are for the left/right column layout */
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-direction: column;
+  text-align: left;
+  gap: var(--space-4);
+  border: none;
+}
+
+/* Make the second item right-aligned */
+.payments-page-root .breakdown-item:nth-child(2) {
+  text-align: right;
+  justify-content: flex-end;
+  /* Pushes its content (label+value) to the right */
+}
+
+.payments-page-root .breakdown-label {
+  /* display: block; (REMOVED) - This was the bug */
+  font-size: var(--font-size-xs);
+  color: #6b7280;
+  margin-right: var(--space-2);
+  /* Add space between label and value */
+}
+
+.payments-page-root .breakdown-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-bold);
+  /* Make value bold */
+  color: var(--brand-black);
+}
+
+.payments-page-root .breakdown-value.withdrawn {
+  color: var(--brand-black);
+  /* Make withdrawn value black */
+}
+
+/* =========================================
+ * END OF (CORRECTED V3) BALANCE CARD STYLES
+ * =========================================
+ */
+.payments-page-root .empty-state {
+  background: var(--brand-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.payments-page-root .empty-state h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.payments-page-root .empty-state p {
+  color: #6b7280;
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.payments-page-root .transactions-section {
+  background-color: var(--brand-white);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.payments-page-root .transactions-section h2 {
+  padding: var(--space-5);
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--brand-black);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.payments-page-root .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-page-root .data-table th,
+.payments-page-root .data-table td {
+  padding: var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.payments-page-root .data-table th {
+  background-color: #f9fafb;
+  font-weight: var(--font-medium);
+  color: #374151;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.payments-page-root .data-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.payments-page-root .data-table tr.even-row {
+  background-color: #f9fafb;
+}
+
+.payments-page-root .amount-cell {
+  font-weight: var(--font-medium);
+  color: var(--primary-color);
+}
+
+.payments-page-root .status-cell {
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+}
+
+.payments-page-root .status-cell.completed {
+  color: #059669;
+}
+
+.payments-page-root .status-cell.pending {
+  color: #d97706;
+}
+
+.payments-page-root .status-cell.failed {
+  color: #dc2626;
+}
+
+.payments-page-root .order-id-cell {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  color: #6b7280;
+}
+
+.payments-page-root .pagination-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.payments-page-root .pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--brand-white);
+  border: 1px solid #d1d5db;
+  border-radius: var(--border-radius-sm);
+  color: #374151;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.15s ease;
+}
+
+.payments-page-root .pagination-btn:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: var(--brand-white);
+  border-color: var(--primary-color);
+}
+
+.payments-page-root .pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payments-page-root .pagination-info {
+  color: #6b7280;
+  font-size: var(--font-size-sm);
+}
+
+.payments-page-root .table-footer {
+  padding: var(--space-3);
+  text-align: center;
+  color: #6b7280;
+  font-size: var(--font-size-sm);
+  margin: 0;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* * =========================================
+ * ISOLATED MEDIA QUERIES
+ * =========================================
+ */
+@media (max-width: 768px) {
+  .payments-page-root .payments-main {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .payments-page-root .topbar .title {
+    margin: auto;
+  }
+
+  .payments-page-root .menu-toggle {
+    display: block;
+  }
+
+  .payments-page-root .data-table {
+    font-size: 0.875rem;
+  }
+
+  .payments-page-root .data-table th,
+  .payments-page-root .data-table td {
+    padding: var(--space-2);
+    min-width: 60px;
+  }
+
+  /* On mobile, stack them nicely */
+  .payments-page-root .balance-breakdown {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+    /* Align columns to the left */
+  }
+
+  .payments-page-root .breakdown-item,
+  .payments-page-root .breakdown-item:nth-child(2) {
+    width: 100%;
+    justify-content: space-between;
+    /* Make it a nice row */
+    text-align: left;
+    /* Force left align */
+  }
+
+  .payments-page-root .empty-state {
+    padding: var(--space-4);
+  }
+
+  .payments-page-root .empty-state h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .payments-page-root .pagination-section {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .payments-page-root .pagination-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}

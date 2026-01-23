@@ -1,0 +1,662 @@
+.tutor-details-page {
+    /* min-height: 100vh; */
+    max-width: 1200px;
+    margin: var(--space-6) auto;
+    color: black;
+}
+
+.tutor-details-page .horizontal {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-6);
+    align-items: flex-start;
+    /* Aligns booking form to top */
+}
+
+.tutor-details-page .details-section {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    align-items: start;
+    gap: var(--space-2);
+    margin: 0px;
+    padding: 0px;
+}
+
+.tutor-details-page .details-section h1,
+.tutor-details-page h2,
+.tutor-details-page .details-section p {
+    padding: 0px;
+    margin: 0px;
+    text-align: start;
+}
+
+.tutor-details-page .details-section p {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+}
+
+.tutor-details-page .details-section .header {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-8);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid rgba(128, 128, 128, 0.109);
+    width: 100%;
+    /* Ensure header takes full width */
+}
+
+.tutor-details-page .details-section img {
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(128, 128, 128, 0.109);
+}
+
+.tutor-details-page .details-section .vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-2);
+    margin: 0px;
+    padding: 0px;
+}
+
+.tutor-details-page .details-section .vertical h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.tutor-details-page .details-section .vertical .info-tile {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-3);
+    color: rgb(117, 112, 129);
+    font-size: var(--font-size-sm);
+    margin: var(--space-1);
+    align-items: center;
+    /* Vertically align icons and text */
+}
+
+/* --- RATING DISPLAY STYLES FOR DETAILS PAGE --- */
+.tutor-details-page .tutor-rating-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-1) 0;
+}
+
+.tutor-details-page .tutor-rating-count {
+    font-size: var(--font-size-sm);
+    color: rgb(117, 112, 129);
+}
+
+.tutor-details-page .details-section .header .vertical .third-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-4);
+}
+
+/* --- MODIFIED: Heading underline fix --- */
+.tutor-details-page h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-bold);
+    color: var(--secondary-color);
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--primary-color);
+    width: fit-content;
+    /* Make border fit text */
+}
+
+.tutor-details-page .details-section h2 {
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--primary-color);
+    width: fit-content;
+    /* Make border fit text */
+}
+
+/* --- END MODIFICATION --- */
+
+
+.tutor-details-page .details-section .vertical .info-tile.detailed {
+    gap: var(--space-1);
+}
+
+.tutor-details-page .subjects-grid,
+.tutor-details-page .teaching-modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+    width: 100%;
+}
+
+.tutor-details-page .subject-card,
+.tutor-details-page .mode-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    background: var(--brand-white);
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-md);
+    text-align: center;
+    box-shadow: 0 var(--space-1) var(--space-4) rgba(0, 0, 0, 0.05);
+    min-height: 80px;
+}
+
+.tutor-details-page .subject-label,
+.tutor-details-page .mode-label {
+    font-size: var(--font-size-md);
+    color: var(--secondary-color);
+    font-weight: var(--font-medium);
+}
+
+.tutor-details-page .address-section {
+    margin-top: var(--space-6);
+    padding: var(--space-4);
+    background: var(--brand-white);
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-md);
+    box-shadow: 0 var(--space-1) var(--space-4) rgba(0, 0, 0, 0.05);
+    width: 100%;
+}
+
+.tutor-details-page .address-header {
+    font-size: var(--font-size-sm);
+    color: var(--brand-grey);
+    margin-bottom: var(--space-2);
+    font-weight: var(--font-medium);
+}
+
+.tutor-details-page .address-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.tutor-details-page .address-icon {
+    width: var(--space-5);
+    height: var(--space-5);
+    color: var(--primary-color);
+}
+
+.tutor-details-page .address-text {
+    font-size: var(--font-size-sm);
+    color: var(--secondary-color);
+    font-weight: var(--font-medium);
+}
+
+.tutor-details-page .booking-section {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    height: fit-content;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(128, 128, 128, 0.188);
+    padding: var(--space-6);
+    box-sizing: border-box;
+    background: var(--brand-white);
+    gap: var(--space-4);
+    position: sticky;
+    /* Makes booking form sticky */
+    top: var(--space-6);
+    /* Sticks below navbar (adjust if needed) */
+}
+
+.tutor-details-page .booking-section h2 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-bold);
+    color: var(--secondary-color);
+    margin: 0;
+    padding-bottom: var(--space-3);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.tutor-details-page .tutors-list {
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    margin: var(--space-4) auto;
+    gap: 16px;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.form-group label {
+    font-weight: var(--font-medium);
+    color: var(--secondary-color);
+    font-size: var(--font-size-sm);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: var(--space-3);
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    background: var(--brand-white);
+    transition: border-color 0.2s ease;
+    appearance: none;
+    background-position: right var(--space-3) center;
+    background-repeat: no-repeat;
+    background-size: var(--space-4);
+    padding-right: var(--space-8);
+}
+
+.form-group select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(237, 90, 9, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.date-picker-input {
+    padding: var(--space-3);
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    background: var(--brand-white);
+    /* width: 100%; */
+}
+
+.date-picker-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(237, 90, 9, 0.1);
+}
+
+/* New styles for time groups */
+.time-group .time-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.time-group .time-inputs input {
+    flex: 1;
+    background-image: none;
+    padding-right: var(--space-3);
+}
+
+.time-group .time-inputs span {
+    font-weight: var(--font-medium);
+    color: var(--brand-grey);
+    white-space: nowrap;
+}
+
+.book-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #d64000 100%);
+    color: var(--brand-white);
+    border: none;
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-bold);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-top: var(--space-2);
+}
+
+.book-btn:hover {
+    transform: translateY(-2px);
+}
+
+.success-message-large {
+    background: #d4edda;
+    color: #155724;
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+    border: 1px solid #c3e6cb;
+    text-align: center;
+    font-size: var(--font-size-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.error-message-large {
+    background: #f8d7da;
+    color: #721c24;
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+    border: 1px solid #f5c6cb;
+    text-align: center;
+    font-size: var(--font-size-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.try-again-btn,
+.book-another-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #d64000 100%);
+    color: var(--brand-white);
+    border: none;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-bold);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.try-again-btn:hover,
+.book-another-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* --- Availability Section Wrapper --- */
+.availability-section {
+    width: 100%;
+    margin-top: var(--space-8);
+}
+
+.availability-section p {
+    font-size: var(--font-size-sm);
+    color: var(--brand-grey);
+    margin-top: var(--space-4);
+}
+
+/* --- END NEW WRAPPER --- */
+
+
+/* --- Availability Calendar Styles --- */
+.availability-calendar {
+    width: 100%;
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    /* For border radius */
+    background: var(--brand-white);
+    margin-top: var(--space-4);
+    /* Added spacing */
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--brand-grey);
+    background: #f9fafb;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+}
+
+.calendar-nav button {
+    background: none;
+    border: 1px solid var(--brand-grey);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7280;
+    transition: background-color 0.2s;
+}
+
+.calendar-nav button:hover {
+    background: #f3f4f6;
+}
+
+.calendar-nav button:first-child {
+    margin-right: var(--space-2);
+}
+
+/* --- MODIFIED: Reset Button Style --- */
+.calendar-nav .calendar-reset-btn {
+    background: none;
+    border: 1px solid var(--brand-grey);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: var(--space-2);
+    cursor: pointer;
+    color: #6b7280;
+    transition: background-color 0.2s;
+    font-size: var(--font-size-xs);
+    /* Make icon slightly smaller */
+}
+
+.calendar-nav .calendar-reset-btn:hover {
+    background: #f3f4f6;
+}
+
+/* --- END MODIFICATION --- */
+
+
+.calendar-date-range {
+    font-weight: var(--font-medium);
+    color: var(--secondary-color);
+}
+
+.calendar-timezone {
+    font-size: var(--font-size-xs);
+    color: #6b7280;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--brand-grey);
+    border-radius: var(--radius-sm);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day-column {
+    border-left: 1px solid var(--brand-grey);
+    text-align: center;
+}
+
+.calendar-day-column:first-child {
+    border-left: none;
+}
+
+.calendar-day-header {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--brand-grey);
+    background: #f9fafb;
+}
+
+.calendar-day-header .day-name {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-medium);
+    color: #6b7280;
+    display: block;
+}
+
+.calendar-day-header .day-number {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-bold);
+    color: var(--secondary-color);
+    display: inline-block;
+    margin-top: var(--space-1);
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    border-radius: 50%;
+}
+
+.calendar-day-column.today .calendar-day-header {
+    background-color: #fffbeb;
+}
+
+.calendar-day-header .day-number.today {
+    background-color: var(--primary-color);
+    color: var(--brand-white);
+}
+
+.calendar-time-slot-list {
+    padding: var(--space-2);
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.calendar-time-text {
+    color: #374151;
+    font-weight: var(--font-medium);
+    font-size: var(--font-size-sm);
+    text-decoration: underline;
+    padding: 2px 0;
+}
+
+.no-availability {
+    font-size: var(--font-size-sm);
+    color: var(--brand-grey);
+    margin-top: var(--space-4);
+}
+
+/* --- END CALENDAR STYLES --- */
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tutor-details-page {
+        padding: 0 var(--space-4);
+
+    }
+
+    .tutor-details-page .horizontal {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    /* --- MODIFIED: Header Responsive Fix --- */
+    .tutor-details-page .details-section .header {
+        flex-direction: column;
+        align-items: stretch;
+        /* Change from center to stretch */
+        gap: var(--space-4);
+    }
+
+    /* --- NEW: Make image full width on mobile --- */
+    .tutor-details-page .details-section .header img {
+        width: 100%;
+        height: 250px;
+        /* Fixed height for aesthetics */
+        object-fit: cover;
+    }
+
+    .tutor-details-page .details-section .header .vertical {
+        align-items: flex-start;
+        /* Change from center to left-align */
+    }
+
+    .tutor-details-page .details-section .header .vertical h1,
+    .tutor-details-page .details-section .header .vertical p {
+        text-align: left;
+        /* Change from center to left-align */
+    }
+
+    /* --- END MODIFICATION --- */
+
+    .tutor-details-page .tutors-list {
+        max-width: auto;
+    }
+
+    .tutor-details-page .details-section,
+    .tutor-details-page .booking-section {
+        width: 100%;
+        position: static;
+    }
+
+    .tutor-details-page .subjects-grid,
+    .tutor-details-page .teaching-modes-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .time-group .time-inputs {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .time-group .time-inputs span {
+        align-self: center;
+    }
+
+    /* --- Calendar Responsive --- */
+    .availability-calendar {
+        border: none;
+    }
+
+    .calendar-grid {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        border: 1px solid var(--brand-grey);
+        border-radius: var(--radius-md);
+    }
+
+    .calendar-day-column {
+        display: inline-block;
+        width: 120px;
+        white-space: normal;
+        vertical-align: top;
+        border-left: 1px solid var(--brand-grey);
+    }
+
+    .calendar-day-column:first-child {
+        border-left: none;
+    }
+
+    .calendar-header {
+        flex-wrap: wrap;
+    }
+
+    .calendar-date-range {
+        order: -1;
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: var(--space-2);
+    }
+
+    .calendar-nav {
+        flex-grow: 1;
+    }
+
+    .calendar-timezone {
+        font-size: var(--font-size-xxs);
+    }
+
+    /* --- END --- */
+}

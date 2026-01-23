@@ -1,0 +1,129 @@
+.slot-drawer {
+    display: none;
+    position: fixed;
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+    font-family: sans-serif;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    padding: var(--space-1);
+}
+
+.slot-drawer.open {
+    display: flex;
+}
+
+.slot-dialog {
+    position: fixed;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin: auto;
+    padding: var(--space-12);
+}
+
+.slot-dialog .header {
+    margin-bottom: var(--space-5);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+}
+
+.slot-dialog .header .icon {
+    color: #000;
+    font-size: var(--font-size-md);
+    font-weight: 100;
+    cursor: pointer;
+}
+
+.slot-drawer #submit {
+    margin-top: var(--space-8);
+    background: var(--primary-color);
+    border: none;
+    color: var(--brand-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.slot-dialog h1 {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: start;
+    color: #000;
+}
+
+.slot-dialog h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: start;
+    color: #000;
+}
+
+.slot-dialog h4 {
+    margin: 12px 0 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    text-align: start;
+}
+
+.slot-dialog .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.slot-dialog .option-btn {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.slot-dialog .option-btn .icon {
+    font-size: 20px;
+}
+
+.slot-dialog .option-btn:hover {
+    border-color: #888;
+    background: #f7f7f7;
+}
+
+.slot-dialog .option-btn.selected {
+    border-color: #1976d2;
+    background: #e3f2fd;
+    color: #1976d2;
+    font-weight: 600;
+}
+
+.slot-dialog .options.days {
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.slot-dialog .options.days .option-btn {
+    padding: 10px;
+    font-size: 13px;
+}

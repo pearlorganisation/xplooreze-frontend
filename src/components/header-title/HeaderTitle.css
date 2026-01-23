@@ -1,0 +1,16 @@
+
+.header-title {
+    margin-bottom: var(--space-10);
+}
+
+.header-title h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--brand-black);
+    text-align: center;
+}
+
+.header-title p {
+    color: var(--brand-black);
+    text-align: center;
+    font-size: var(--font-size-md);
+}

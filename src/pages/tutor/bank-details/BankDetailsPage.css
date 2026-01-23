@@ -1,0 +1,226 @@
+/* ========================================
+CONTAINER & MAIN LAYOUT
+(Scoped to .bank-details-page)
+========================================
+*/
+.bank-details-page {
+  display: flex;
+  background-color: #f9fafb; 
+  min-height: 100vh; /* <-- FIX 1: Ensures full viewport height */
+}
+
+.bank-details-page .bank-details-content {
+  flex: 1;
+  padding: var(--space-8);
+  background-color: #f9fafb; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+HEADER
+(Scoped version of .tutor-account-header)
+========================================
+*/
+.bank-details-page .tutor-account-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.bank-details-page .tutor-account-header .title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  text-align: left;
+  margin-right: auto;
+}
+
+.bank-details-page .menu-toggle {
+  display: none;
+  font-size: 2.0rem;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ========================================
+FORM STYLING
+(Scoped versions from TutorAccount.css)
+========================================
+*/
+
+/* The main white box */
+.bank-details-page .form-details {
+  background-color: var(--brand-white);
+  border-radius: 5px;
+  border: 1px solid rgb(237, 237, 237);
+  padding: var(--space-0); 
+  display: flex;
+  flex-direction: row; 
+  gap: 0;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* The padding wrapper, now named .other-details */
+.bank-details-page .other-details {
+  padding: var(--space-5) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  align-content: start;
+  align-items: start;
+}
+
+/* Form title */
+.bank-details-page .header-title {
+  font-size: var(--font-size-md);
+  color: var(--brand-black);
+  font-weight: var(--font-medium);
+  padding: 0;
+  margin: 0;
+}
+
+/* Standard form group */
+.bank-details-page .form-group {
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.bank-details-page .form-group label {
+  color: #333;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.bank-details-page .form-group label.required::after {
+  content: ' *';
+  color: #ff2626;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+/* Standard input styling */
+.bank-details-page .form-group input {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box; 
+}
+
+.bank-details-page .form-group input:focus {
+   outline: none;
+   border-color: var(--primary-color);
+   box-shadow: 0 0 0 3px var(--primary-color-light, rgba(99, 95, 255, 0.2));
+}
+
+/* ========================================
+LAYOUT & FOOTER STYLES
+========================================
+*/
+
+/* <-- FIX 2: Added .grid-2 styles from TutorAccount.css */
+.bank-details-page .grid-2 {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Footer for messages */
+.bank-details-page .form-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  margin-top: -16px; 
+}
+
+/* Save button */
+.bank-details-page .save-btn {
+  background: var(--primary-color);
+    border: none;
+    color: var(--brand-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-right: auto; 
+    margin-top: 16px; /* Aligns with form-details margin */
+}
+
+.bank-details-page .save-btn:disabled {
+  background-color: var(--neutral-color, #ccc);
+  cursor: not-allowed;
+}
+
+/* Status messages */
+.bank-details-page .form-error-message {
+  color: #dc2626; 
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-medium);
+}
+
+.bank-details-page .form-success-message {
+  color: #28a745; 
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ========================================
+RESPONSIVE STYLES
+========================================
+*/
+@media (max-width: 768px) {
+  .bank-details-page .bank-details-content {
+    padding: var(--space-4);
+    overflow-x: hidden; 
+    overflow-y: visible; 
+  }
+  
+  .bank-details-page .menu-toggle {
+    display: block; /* Show hamburger menu */
+  }
+
+  .bank-details-page .tutor-account-header .title {
+    margin: auto; /* Center title */
+  }
+
+  .bank-details-page .form-details {
+    flex-direction: column;
+    gap: var(--space-0);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .bank-details-page .other-details {
+     padding: var(--space-5); /* Less padding on mobile */
+  }
+
+  /* <-- FIX 2: Makes the 2-column grid stack vertically */
+  .bank-details-page .grid-2 {
+    flex-direction: column;
+    gap: var(--space-6); /* Use the row gap for vertical spacing */
+  }
+
+  .bank-details-page .save-btn {
+    margin-top: var(--space-0);
+  }
+}

@@ -1,0 +1,281 @@
+.phd-mentorship {
+    margin: 0 auto;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.phd-mentorship header {
+    margin: 0;
+    padding: 0;
+}
+
+.phd-mentorship .header-content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    min-height: 400px;
+}
+
+.phd-mentorship header h1 {
+    font-size: var(--font-size-3xl);
+    margin: var(--space-0) var(--space-0) var(--space-4) var(--space-0);
+    color: var(--brand-black);
+    line-height: var(--line-height-normal);
+}
+
+.phd-mentorship .hero-content p {
+    font-size: var(--font-size-md);
+    margin: var(--space-0) var(--space-0) var(--space-5) var(--space-0);
+    color: var(--brand-black);
+    line-height: var(--line-height-relaxed);
+}
+
+.phd-mentorship .hero-image.other {
+    display: flex;
+    align-items: center;
+}
+
+.phd-mentorship .hero-image.phone {
+    display: none;
+}
+
+.phd-mentorship .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+.phd-mentorship header video {
+    height: 300px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.phd-mentorship .cta-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+}
+
+.phd-mentorship .primary-btn {
+    display: flex;
+    background: var(--primary-color);
+    border: none;
+    color: var(--brand-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    align-items: center;
+}
+
+.phd-mentorship .secondary-btn {
+    display: flex;
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    align-items: center;
+}
+
+
+.phd-mentorship .phd-section {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-12);
+    padding: var(--space-3) 0;
+}
+
+.phd-mentorship .phd-section.right {
+    flex-direction: row;
+}
+
+.phd-mentorship .phd-section.left {
+    flex-direction: row-reverse;
+}
+
+.phd-mentorship .phd-section.card {
+    flex-direction: row;
+    border: 1px solid rgba(128, 128, 128, 0.234);
+    border-radius: 15px;
+    padding: var(--space-3) var(--space-8);
+    background-color: white;
+}
+
+.phd-mentorship .phd-section .about-founder-content.right {
+    width: 100%;
+}
+
+.phd-mentorship .phd-section .about-founder-content h1 {
+    color: black;
+    font-size: var(--font-size-2xl);
+    text-align: start;
+}
+
+.phd-mentorship .phd-section .about-founder-content p {
+    color: black;
+    font-size: var(--font-size-md);
+    text-align: start;
+    line-height: var(--line-height-relaxed);
+}
+
+.phd-mentorship .phd-section .about-founder-content li {
+    color: black;
+    font-size: var(--font-size-md);
+    text-align: start;
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+}
+
+.phd-mentorship .phd-section .about-founder-content .cta-buttons {
+    margin-top: var(--space-6);
+}
+
+.phd-mentorship .phd-section .founder-img {
+    width: 30%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.phd-mentorship .phd-section .founder-img.phone {
+    display: none;
+}
+
+.phd-mentorship .faq-section {
+    padding: var(--space-4) 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.phd-mentorship .faq-title {
+    font-size: calc(var(--font-size-2xl) + 0.25rem);
+    font-weight: bold;
+    color: var(--brand-black);
+    margin-bottom: var(--space-8);
+    text-align: center;
+}
+
+.phd-mentorship .faq-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(128, 128, 128, 0.1);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-4);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.phd-mentorship .faq-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.phd-mentorship .faq-question {
+    background: #f9f9f9;
+    color: var(--brand-black);
+    padding: var(--space-4) var(--space-6);
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-size: var(--font-size-md);
+    transition: background 0.3s ease;
+}
+
+.phd-mentorship .faq-question:hover {
+    background: #f1f1f1;
+}
+
+.phd-mentorship .faq-answer {
+    padding: var(--space-4) var(--space-6);
+    background: #fff;
+    color: var(--brand-black);
+    line-height: var(--line-height-relaxed);
+    border-top: 1px solid rgba(128, 128, 128, 0.234);
+    border-left: 4px solid var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .phd-mentorship {
+        padding: var(--space-4) var(--space-10);
+    }
+
+    .phd-mentorship .header-content {
+        padding: 0;
+    }
+
+    .phd-mentorship header h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .phd-mentorship .hero-image.other {
+        display: none;
+    }
+
+    .phd-mentorship .hero-image.phone {
+        display: flex;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        text-align: center;
+    }
+
+
+    .phd-mentorship .hero-image.other {
+        display: none;
+    }
+
+    .phd-mentorship .hero-image.phone {
+        display: none;
+    }
+
+    .phd-mentorship .phd-section .founder-img {
+    display: none;
+}
+
+.phd-mentorship .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+}
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .secondary-btn:hover {
+        background: var(--primary-color);
+        color: var(--brand-color);
+    }
+
+    .primary-btn:hover {
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        border-radius: var(--radius-sm);
+        background: transparent;
+    }
+}

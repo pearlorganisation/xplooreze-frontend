@@ -1,0 +1,299 @@
+.tutor-account-container {
+  display: flex;
+  background-color: #f9fafb;
+}
+
+.tutor-account-content {
+  flex: 1;
+  padding: var(--space-6) var(--space-8);
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+.tutor-account-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.tutor-account-header .title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  text-align: left;
+  margin-right: auto;
+}
+
+.tutor-account-header .logout-button {
+  background: transparent;
+  border: 1px solid var(--brand-black);
+  color: var(--brand-black);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-regular);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-2);
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.tutor-account-content .form-details {
+  background-color: var(--brand-white);
+  border-radius: 5px;
+  border: 1px solid rgb(237, 237, 237);
+  padding: var(--space-0);
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.form-details .header-title {
+  font-size: var(--font-size-md);
+  color: var(--brand-black);
+  font-weight: var(--font-medium);
+  padding: 0;
+  margin: 0;
+}
+
+.form-group {
+  width: 100%;
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.form-group label {
+  color: #333;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.form-group label.required::after {
+  content: ' *';
+  color: #ff2626;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group select {
+  appearance: none;
+  /* removes native arrow */
+  -webkit-appearance: none;
+  /* Safari */
+  -moz-appearance: none;
+  /* Firefox */
+  padding: 10px 36px 10px 12px;
+  /* extra right space for arrow */
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' width='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+#students_per_class,
+#min_hour_charge,
+#max_hour_charge {
+  font-size: var(--font-size-xs);
+  color: var(--brand-black);
+  padding: 10px 36px 10px 12px;
+}
+
+.grid-2 {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  width: 100%;
+}
+
+
+.grid-3 .form-group {
+  width: 31.8%;
+}
+
+.grid-3 {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+
+.personal-details {
+  border-right: 1px solid rgb(237, 237, 237);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  align-content: start;
+  align-items: start;
+  padding: var(--space-5) var(--space-8);
+}
+
+.edit-icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 100;
+  color: var(--brand-white);
+  background-color: #33333356;
+  padding: 8px;
+  border-radius: 20%;
+  cursor: pointer;
+}
+
+.personal-details .avatar {
+  position: relative;
+  min-width: 150px;
+  aspect-ratio: 1;
+  border-radius: 5%;
+  background-color: grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.personal-details .avatar img {
+  width: 220px;
+  aspect-ratio: 1;
+  border-radius: 5%;
+  object-fit: cover;
+}
+
+.other-details {
+  width: 100%;
+  padding: var(--space-5) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  align-content: start;
+  align-items: start;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-group .multi-select-container {
+  /* class wrapping your MultiSelect */
+  max-width: 100%;
+  width: 100%;
+  /* ensures it shrinks with container */
+  box-sizing: border-box;
+  /* prevents padding from making it overflow */
+}
+
+#gender,
+#dateOfBirth,
+#contactNumber,
+#timezone,
+#email {
+  cursor: not-allowed;
+}
+
+.save-btn {
+  background: var(--primary-color);
+    border: none;
+    color: var(--brand-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+@media (max-width: 768px) {
+  .tutor-account-content {
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+
+  .tutor-account-container {
+    margin: var(--space-4) 0;
+  }
+
+  .tutor-account-header .title {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .tutor-account-content .form-details {
+    flex-direction: column;
+    gap: var(--space-0);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .personal-details {
+    border-right: none;
+    border-bottom: 1px solid rgb(237, 237, 237);
+  }
+
+  .personal-details .avatar {
+    width: 100%;
+  }
+
+  .personal-details .upload-area {
+    width: 100%;
+  }
+
+  .grid-2 {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+
+  .grid-3 {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .grid-3 .form-group {
+    width: 100%;
+  }
+
+
+  .other-details {
+    width: auto;
+  }
+
+
+}

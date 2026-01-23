@@ -1,0 +1,78 @@
+.cd-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.cd-panel {
+    background: #fff;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 1.25rem;
+    box-sizing: border-box;
+}
+
+.cd-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.125rem;
+    color: #000;
+}
+
+.cd-message {
+    color: #333;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.cd-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.cd-btn {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.cd-btn:focus {
+    outline: 3px solid rgba(21, 156, 228, 0.35);
+    outline-offset: 2px;
+}
+
+.cd-btn-confirm {
+    color: #fff;
+}
+
+.cd-btn-cancel {
+    background: #f3f4f6;
+    color: #111827;
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width:420px) {
+    .cd-panel {
+        padding: 1rem;
+        border-radius: 6px;
+    }
+
+    .cd-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .cd-btn {
+        width: 100%;
+    }
+}

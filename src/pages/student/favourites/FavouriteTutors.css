@@ -1,0 +1,129 @@
+/* ===========================
+   Favourite Tutors Section
+   =========================== */
+
+.favourite-tutors {
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: var(--space-6);
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevents horizontal scrolling issues */
+}
+
+.favourite-tutors .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-5);
+    margin: 0 auto;
+    margin-top: var(--space-8);
+    max-width: 700px;
+}
+
+/* ===========================
+   Empty State Card
+   =========================== */
+
+.empty-state {
+    text-align: center;
+    padding: var(--space-6);
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-4);
+    color: #666;
+}
+
+.empty-state h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-2);
+    color: #333;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: var(--space-6);
+}
+
+/* ===========================
+   Explore Button
+   =========================== */
+
+.explore-button {
+    padding: var(--space-3) var(--space-6);
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.explore-button:hover {
+    background-color: #0056b3;
+}
+
+/* ===========================
+   Info Paragraph
+   =========================== */
+
+.favourite-tutors .content p {
+    color: black;
+    padding: var(--space-4);
+    margin: var(--space-10) 0;
+    max-width: 700px;
+    border-radius: 10px;
+    border: 1px dashed black;
+    line-height: var(--line-height-relaxed);
+}
+
+/* ===========================
+   Tutors List
+   =========================== */
+
+.favourite-tutors .tutors-list {
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    margin: var(--space-4) auto;
+    gap: 16px;
+    width: 100%;
+}
+
+/* ===========================
+   Responsive Layout
+   =========================== */
+
+@media (max-width: 768px) {
+    .favourite-tutors {
+        padding: var(--space-4);
+    }
+
+    .favourite-tutors .tutors-list {
+        width: 100%;
+        padding: var(--space-4);
+    }
+
+    .empty-state {
+        padding: var(--space-5);
+        border-radius: 12px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 90%;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}

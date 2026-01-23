@@ -1,0 +1,270 @@
+/* ========================================
+CONTAINER & MAIN LAYOUT
+(Scoped to .verification-page)
+========================================
+*/
+.verification-page {
+  display: flex;
+  background-color: #f9fafb; 
+  min-height: 100vh;
+}
+
+.verification-page .verification-content {
+  flex: 1;
+  padding: var(--space-8);
+  background-color: #f9fafb; 
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* Added for safety */
+  box-sizing: border-box; /* Added for safety */
+}
+
+/* ========================================
+HEADER
+(Scoped version of .tutor-account-header)
+========================================
+*/
+.verification-page .tutor-account-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%; /* Added for safety */
+  box-sizing: border-box; /* Added for safety */
+}
+
+.verification-page .tutor-account-header .title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  text-align: left;
+  margin-right: auto;
+}
+
+.verification-page .menu-toggle {
+  display: none;
+  font-size: 2.0rem;
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ========================================
+FORM STYLING
+(Scoped versions from TutorAccount.css)
+========================================
+*/
+
+/* The main white box */
+.verification-page .form-details {
+  background-color: var(--brand-white);
+  border-radius: 5px;
+  border: 1px solid rgb(237, 237, 237);
+  padding: var(--space-0); 
+  display: flex;
+  flex-direction: row; 
+  gap: 0;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+  width: 100%; /* Added for safety */
+  box-sizing: border-box; /* Added for safety */
+}
+
+/* The padding wrapper, now named .other-details */
+.verification-page .other-details {
+  width: 100%; 
+  padding: var(--space-5) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  align-content: start;
+  align-items: start;
+  box-sizing: border-box; /* Added for safety */
+}
+
+/* Form title */
+.verification-page .header-title {
+  font-size: var(--font-size-md);
+  color: var(--brand-black);
+  font-weight: var(--font-medium);
+  padding: 0;
+  margin: 0;
+}
+
+/* Standard form group */
+.verification-page .form-group {
+  margin: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  width: 100%; 
+  box-sizing: border-box; /* Added for safety */
+}
+
+.verification-page .form-group label {
+  color: #333;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.verification-page .form-group label.required::after {
+  content: ' *';
+  color: #ff2626;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+/* Standard input styling */
+.verification-page .form-group input[type="file"] {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box; 
+  cursor: pointer;
+}
+
+/* Specific for file input */
+.verification-page .form-group input[type="file"]::file-selector-button {
+  background: var(--primary-color-light, rgba(99, 95, 255, 0.1));
+  color: var(--primary-color);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.verification-page .form-group input[type="file"]::file-selector-button:hover {
+  background: var(--primary-color-light, rgba(99, 95, 255, 0.2));
+}
+
+.verification-page .form-group input[type="file"]:focus {
+   outline: none;
+   border-color: var(--primary-color);
+   box-shadow: 0 0 0 3px var(--primary-color-light, rgba(99, 95, 255, 0.2));
+}
+
+.verification-page .form-group small {
+    font-size: var(--font-size-xs);
+    color: #6b7280; /* Muted gray */
+    margin-top: 4px;
+    text-align: left;
+}
+
+
+/* ========================================
+LAYOUT & FOOTER STYLES
+========================================
+*/
+
+/* Rejection Message Box */
+.verification-page .rejection-message {
+    width: 100%;
+    padding: var(--space-4);
+    background-color: #fef2f2; /* Light red */
+    border: 1px solid #fca5a5; /* Red border */
+    border-radius: 6px;
+    color: #b91c1c; /* Dark red text */
+    box-sizing: border-box; /* Added for safety */
+}
+.verification-page .rejection-message p {
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+.verification-page .rejection-message p:first-child {
+    font-weight: var(--font-bold);
+    font-size: var(--font-size-sm);
+}
+
+/* Footer for messages */
+.verification-page .form-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+/* Save button */
+.verification-page .save-btn {
+  background: var(--primary-color);
+    border: none;
+    color: var(--brand-color);
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-right: auto; 
+    margin-top: 16px; 
+}
+
+.verification-page .save-btn:disabled {
+  background-color: var(--neutral-color, #ccc);
+  cursor: not-allowed;
+}
+
+/* Status messages */
+.verification-page .form-error-message {
+  color: #dc2626; 
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-medium);
+}
+
+.verification-page .form-success-message {
+  color: #28a745; 
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-medium);
+}
+
+/* ========================================
+RESPONSIVE STYLES
+========================================
+*/
+@media (max-width: 768px) {
+  .verification-page .verification-content {
+    padding: var(--space-4); /* Main horizontal padding */
+    overflow-x: hidden; 
+    overflow-y: visible; 
+  }
+  
+  .verification-page .menu-toggle {
+    display: block; /* Show hamburger menu */
+  }
+
+  .verification-page .tutor-account-header .title {
+    margin: auto; /* Center title */
+  }
+
+  .verification-page .form-details {
+    flex-direction: column;
+    gap: var(--space-0);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .verification-page .other-details {
+     padding: var(--space-5); /* Inner padding for the white box */
+  }
+
+  .verification-page .save-btn {
+    margin-top: var(--space-0);
+    margin-right: 0; /* Override desktop margin */
+    margin-left: 0; /* Override desktop margin */
+    width: 100%; /* Make button full width */
+  }
+}

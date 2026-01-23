@@ -1,0 +1,275 @@
+.consultation-root {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.consultation-root .side-bar {
+  display: flex;
+  flex-direction: column;
+  width: 36%;
+  height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.consultation-root .side-bar .back-icon {
+  color: black;
+  margin-right: auto;
+  margin-left: var(--space-6);
+  margin-top: var(--space-6);
+  padding: var(--space-2);
+  background-color: rgba(128, 128, 128, 0.127);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.consultation-root .side-bar video {
+  height: 50%;
+  width: 50%;
+  object-fit: contain;
+  margin: auto;
+  margin-right: 0;
+}
+
+.login-app-logo {
+  width: 35%;
+  aspect-ratio: 3 / 1;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.consultation-root .authentication-container {
+  display: flex;
+  align-items: center;
+  width: 70%;
+}
+
+.consultation-root .authentication-box {
+  width: 100%;
+  max-width: 500px;
+  margin: var(--space-2) auto;
+}
+
+.consultation-root .authentication-container h2 {
+  font-size: var(--font-size-lg);
+  color: var(--brand-black);
+  text-align: center;
+  padding: 0;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.consultation-root .price-display {
+  margin: 12px 0;
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  color: var(--brand-black);
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary-color), darken(var(--primary-color), 10%));
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(107, 190, 68, 0.3);
+}
+
+.consultation-root .authentication-box .form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.consultation-root .authentication-box .form-group label {
+  color: #333;
+  margin-bottom: 6px;
+  text-align: start;
+  font-weight: var(--font-regular);
+  font-size: var(--font-size-sm);
+}
+
+.consultation-root .authentication-box .form-group label.required::after {
+  content: ' *';
+  color: #ff2626;
+}
+
+.consultation-root .authentication-box .form-group input:not(select):not([type="checkbox"]):not([type="radio"]),
+.consultation-root .authentication-box .form-group textarea,
+.consultation-root .date-picker-input {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: white;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+.consultation-root .authentication-box .form-group select {
+  padding: 12px 40px 12px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: white;
+  cursor: pointer;
+  -webkit-appearance: menulist !important;
+  -moz-appearance: menulist !important;
+  appearance: menulist !important;
+  background-image: none !important;
+}
+
+.consultation-root .checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.consultation-root .checkbox-label input[type="checkbox"] {
+  margin-right: 8px;
+  width: auto;
+  -webkit-appearance: checkbox !important;
+  -moz-appearance: checkbox !important;
+  appearance: checkbox !important;
+}
+
+.consultation-root .authentication-box .form-group input[type="number"]::-webkit-outer-spin-button,
+.consultation-root .authentication-box .form-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+.consultation-root .authentication-box .form-group input[type="file"] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  padding: 8px;
+}
+
+.consultation-root .authentication-box .form-group input:focus:not([type="checkbox"]),
+.consultation-root .authentication-box .form-group textarea:focus,
+.consultation-root .authentication-box .form-group select:focus,
+.consultation-root .date-picker-input:focus,
+.consultation-root .checkbox-label input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px rgba(107, 190, 68, 0.4);
+  outline: none;
+  background: #fff;
+}
+
+.consultation-root .summary {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.consultation-root .summary h3 {
+  margin-top: 0;
+}
+
+.consultation-root .summary p {
+  margin: 8px 0;
+}
+
+.consultation-root .success-page {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.consultation-root .success-page h2 {
+  color: var(--primary-color);
+}
+
+.consultation-root .calendar-links {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.consultation-root .calendar-btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.consultation-root .actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+.consultation-root .submit-btn,
+.consultation-root .back-btn {
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.consultation-root .submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  flex: 1;
+}
+
+.consultation-root .submit-btn:hover {
+  opacity: 0.9;
+}
+
+.consultation-root .back-btn {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  flex: 1;
+}
+
+.consultation-root .back-btn:hover {
+  background-color: #ccc;
+}
+
+@media (min-width: 769px) {
+  .consultation-root .actions {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .consultation-root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .consultation-root .side-bar {
+    display: none;
+  }
+
+  .consultation-root .authentication-container {
+    width: 80%;
+    margin: auto;
+  }
+
+  .consultation-root .login-app-logo {
+    width: 45%;
+    aspect-ratio: 3 / 1;
+    object-fit: contain;
+  }
+
+  .consultation-root .calendar-links {
+    flex-direction: column;
+  }
+}

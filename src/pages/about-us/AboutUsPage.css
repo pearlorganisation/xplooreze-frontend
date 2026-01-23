@@ -1,0 +1,289 @@
+.about-us-header {
+    position: relative;
+    background-image: url('/our-story.avif');
+    background-color: var(--secondary-color);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: var(--space-16);
+    color: white;
+    z-index: 0;
+    align-content: center;
+}
+
+.about-us-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.about-us-header .header-title h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--brand-white);
+    text-align: center;
+    margin: 0;
+    margin-top: 26px;
+}
+
+.about-us-header .header-title p {
+    color: var(--brand-white);
+    text-align: center;
+    font-size: var(--font-size-md);
+}
+
+.about-us .items {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    max-width: 1200px;
+    margin: var(--space-12) auto;
+}
+
+.about-us .items .about-founder-card {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-12);
+}
+
+.about-us .items .about-founder-card .about-founder-content h1 {
+    color: black;
+    font-size: var(--font-size-2xl);
+    text-align: start;
+}
+
+.about-us .items .about-founder-card .about-founder-content p {
+    color: black;
+    font-size: var(--font-size-sm);
+    text-align: start;
+    line-height: var(--line-height-relaxed);
+}
+
+.about-us .items .about-founder-card .about-founder-content .cta-buttons {
+    margin-top: var(--space-6);
+}
+
+.about-us .items .about-founder-card .founder-img {
+    width: 30%;
+    aspect-ratio: 6 / 7;
+    object-fit: cover;
+    border-radius: 30px;
+}
+
+.about-us .items .about-founder-card .founder-img.phone {
+    display: none;
+}
+
+.mission-and-values {
+    background-color: var(--brand-white);
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-4);
+    border-radius: 30px;
+    padding: var(--space-3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mission-and-values .mission {
+    background-color: var(--primary-color);
+    width: 24%;
+    padding: var(--space-10);
+    border-radius: 30px;
+}
+
+.mission-and-values h1 {
+    color: var(--brand-white);
+    text-align: start;
+    font-size: var(--font-size-2xl);
+    margin: 0;
+}
+
+.mission-and-values p {
+    color: var(--brand-white);
+    text-align: start;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+}
+
+.mission-and-values .values {
+    padding: var(--space-6);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    justify-items: center;
+    background-color: var(--brand-white);
+}
+
+.mission-and-values .values h1 {
+    color: var(--brand-black);
+    margin: 0;
+}
+
+.mission-and-values .values p {
+    color: var(--brand-black);
+    text-align: center;
+}
+
+.mission-and-values .values .value-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+}
+
+.mission-and-values .values .values-items {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-8);
+}
+
+.mission-and-values .values .icon {
+    color: var(--brand-black);
+    font-size: var(--font-size-3xl);
+    margin: var(--space-6) 0px;
+}
+
+
+.mission-and-values .value-item h1 {
+    font-size: var(--font-size-md);
+    margin: 0px;
+    padding: 0;
+    text-align: center;
+}
+
+.mission-and-values .value-item p {
+    font-size: var(--font-size-sm);
+    margin: 0px;
+    padding: 0;
+    text-align: center;
+}
+
+.where-we-are-headed .card {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-10);
+    background-color: var(--secondary-color);
+    border-radius: 30px;
+    padding: var(--space-0);
+    overflow: hidden;
+}
+
+.where-we-are-headed .card .header-title h1 {
+    margin: 0;
+}
+
+.where-we-are-headed .card .content {
+    padding: var(--space-16) var(--space-4);
+}
+
+.where-we-are-headed .card .content .header-title h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--brand-white);
+    text-align: start;
+    margin: 0;
+}
+
+.where-we-are-headed .card .content .header-title p {
+    color: var(--brand-white);
+    text-align: start;
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-relaxed);
+}
+
+
+.where-we-are-headed .card img {
+    width: 50%;
+    line-height: var(--line-height-relaxed);
+}
+
+
+@media (max-width: 768px) {
+    .about-us .items {
+        padding: 0 var(--space-10);
+    }
+
+    .about-us-header {
+        padding: var(--space-6);
+    }
+
+    .about-us-header .header-title h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .about-us .items .about-founder-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .about-us .items .about-founder-card .about-founder-content h1 {
+        text-align: center;
+    }
+
+
+    .about-us .items .about-founder-card .founder-img {
+        width: 100%;
+    }
+
+    .about-us .items .about-founder-card .founder-img.phone {
+        display: block;
+        margin: var(--space-6) 0;
+    }
+
+    .about-us .items .about-founder-card .founder-img.desktop {
+        display: none;
+    }
+
+    .mission-and-values {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .mission-and-values .mission {
+        width: auto;
+        padding: var(--space-12) var(--space-8);
+    }
+
+
+    .mission-and-values .values .values-items {
+        gap: var(--space-3);
+        flex-direction: column;
+    }
+
+    .where-we-are-headed .card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-0);
+    }
+
+    .where-we-are-headed .card img {
+        width: 100%;
+    }
+
+    .where-we-are-headed .card .content {
+        padding: var(--space-16) var(--space-8);
+    }
+
+    .where-we-are-headed .card .content .header-title h1 {
+        font-size: var(--font-size-2xl);
+        color: var(--brand-white);
+        text-align: start;
+        margin: 0;
+    }
+
+    .where-we-are-headed .card .content .header-title p {
+        color: var(--brand-white);
+        text-align: start;
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-relaxed);
+    }
+
+}

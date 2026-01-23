@@ -1,0 +1,44 @@
+.star-rating {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.star-rating.editable {
+    cursor: pointer;
+}
+
+.star {
+    display: inline-flex;
+    font-size: 20px;
+    transition: transform 0.2s ease;
+}
+
+.star-rating.editable .star:hover {
+    transform: scale(1.2);
+}
+
+.star-filled {
+    color: #ffc107;
+}
+
+.star-empty {
+    color: #e0e0e0;
+}
+
+.star-rating.editable .star-filled {
+    color: #ff9800;
+}
+
+.star-rating.editable .star:hover .star-filled,
+.star-rating.editable .star:hover .star-empty {
+    color: #ff9800;
+}
+
+.star-rating.read-only {
+    cursor: default;
+}
+
+.star-rating.read-only .star {
+    cursor: default;
+}

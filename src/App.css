@@ -1,0 +1,12 @@
+#root {
+  margin: var(--space-0);
+  padding: var(--space-0);
+  text-align: center;
+  color: var(--brand-white);
+}
+
+.app-container {
+  margin: 0px;
+  padding: 0px;
+  background-color: rgb(249, 249, 249);
+}
