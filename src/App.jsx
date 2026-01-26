@@ -77,6 +77,7 @@ function AppContent() {
     >
       {!hideNav && <NavBar />}
       {!hideStudentNav && <StudentNavBar />}
+      {/* <StudentNavBar /> */}
       <ScrollToTop />
       <Routes>
         <Route
