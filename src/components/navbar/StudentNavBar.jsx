@@ -5,13 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "../../data/config.js";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/AuthProvider.jsx";
+import NavBar from "./NavBar.jsx";
 
 function StudentNavBar() {
   const { user, isLoggedIn } = useAuth();
 
-  // if (!isLoggedIn) {
-  //   return null;
-  // }
+  if (!isLoggedIn) {
+    return <NavBar />;
+  }
 
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

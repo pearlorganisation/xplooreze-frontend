@@ -39,12 +39,16 @@ import FavouriteTutors from "./pages/student/favourites/FavouriteTutors";
 import VideoCall from "./pages/videocall/VideoCall";
 import { BankDetailsPage } from "./pages/tutor/bank-details/BankDetailsPage";
 import { VerificationPage } from "./pages/tutor/verification-page/VerificationPage";
+import SubCategoryPage from "./pages/student/category/SubCategoryPage";
+import CategoryPage from "./pages/student/category/CategoryPage";
 
 function AppContent() {
   const location = useLocation();
   const pageRequiringNavBar = [
     "/welcome",
     "/blogs",
+    "/categories",
+    "/categories/:categoryName",
     "/blog-details",
     "/privacy-policy",
     "/terms-and-conditions",
@@ -161,6 +165,8 @@ function AppContent() {
           }
         />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route path="/categories" element={<CategoryPage />} />
+        <Route path="/categories/:categoryName" element={<SubCategoryPage />} />
         <Route
           path="/student-classes"
           element={
