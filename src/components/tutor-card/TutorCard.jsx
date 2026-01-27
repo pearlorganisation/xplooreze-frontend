@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import "./TutorCard.css";
 import {
   FaClock,
@@ -15,8 +15,10 @@ import StarRating from "../star-rating/StarRating";
 export default function TutorCard({ tutor, canTrial }) {
   const navigate = useNavigate();
 
-  // 1. Sync local state with props when they change
-  // This prevents the "fluctuating" UI state when the list re-renders
+  // 1. Check Authentication Status
+  // Replace 'token' with whatever key you use to store your auth session/token
+  const isAuthenticated = !!localStorage.getItem("token");
+
   const [isFavorited, setIsFavorited] = useState(tutor.isFavourite || false);
 
   useEffect(() => {
@@ -28,10 +30,31 @@ export default function TutorCard({ tutor, canTrial }) {
       ? `${import.meta.env.VITE_APP_BASE_URL}/${tutor.profilePhoto}`
       : tutor.profilePhoto || "/app-logo-black.png";
 
+  // 2. Modified Navigation Handler with Login Wall
+  const handleProtectedNavigation = (e, targetPath) => {
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      // If not logged in, redirect to the registration/login page provided in your sample
+      // You can also append a "redirect" query param if you want to return here after login
+      navigate(
+        "/authentication?authType=registration&userRole=student&tutoringMode=Online%20Tutoring",
+      );
+    } else {
+      // If logged in, proceed to details
+      navigate(targetPath);
+    }
+  };
+
   const handleFavoriteToggle = async (e) => {
     e.stopPropagation();
 
-    // Optimistic UI update
+    // Optional: Add login wall to favorites too
+    if (!isAuthenticated) {
+      navigate("/authentication?authType=registration&userRole=student");
+      return;
+    }
+
     const previousState = isFavorited;
     setIsFavorited(!previousState);
 
@@ -43,29 +66,27 @@ export default function TutorCard({ tutor, canTrial }) {
       }
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
-      setIsFavorited(previousState); // Revert if API fails
+      setIsFavorited(previousState);
     }
-  };
-
-  const handleNavigation = (e, path) => {
-    e.stopPropagation();
-    navigate(path);
   };
 
   return (
     <div
       className="tutor-card-root"
-      onClick={() => navigate(`/tutor-details/${tutor._id}`)}
+      // Apply protected navigation to the whole card
+      onClick={(e) =>
+        handleProtectedNavigation(e, `/tutor-details/${tutor._id}`)
+      }
     >
       <div className="first-section">
         <img
           src={profilePhoto}
           alt={tutor.fullName}
-          loading="lazy" // Performance optimization
+          loading="lazy"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src =
-              import.meta.env.VITE_PROFILE_PHOTO_PLACEHOLDER || "/fallback.png";
+            e.target.src = import.meta.env.VITE_PROFILE_PHOTO_PLACEHOLDER;
+            // import.meta.env.VITE_PROFILE_PHOTO_PLACEHOLDER || "/fallback.png";
           }}
         />
         <FaHeart
@@ -78,7 +99,6 @@ export default function TutorCard({ tutor, canTrial }) {
         <div className="section-header">
           <h1>{tutor.fullName || "Unknown"}</h1>
           <div className="modes">
-            {/* Added optional chaining to prevent crashes */}
             {tutor.tutoring_mode?.map((mode) => (
               <p key={mode}>{mode}</p>
             ))}
@@ -138,7 +158,10 @@ export default function TutorCard({ tutor, canTrial }) {
         <div className="button-group">
           <button
             className="primary-btn"
-            onClick={(e) => handleNavigation(e, `/tutor-details/${tutor._id}`)}
+            // Apply protected navigation to button
+            onClick={(e) =>
+              handleProtectedNavigation(e, `/tutor-details/${tutor._id}`)
+            }
           >
             Book A Class Now →
           </button>
@@ -146,8 +169,12 @@ export default function TutorCard({ tutor, canTrial }) {
           {canTrial && (
             <button
               className="secondary-btn"
+              // Apply protected navigation to trial button
               onClick={(e) =>
-                handleNavigation(e, `/tutor-details/${tutor._id}?trial=true`)
+                handleProtectedNavigation(
+                  e,
+                  `/tutor-details/${tutor._id}?trial=true`,
+                )
               }
             >
               Book A Free Trial

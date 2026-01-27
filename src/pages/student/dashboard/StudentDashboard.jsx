@@ -136,18 +136,24 @@ export default function StudentDashboard() {
     window.addEventListener("resize", checkMobile);
 
     async function fetchStaticData() {
+      checkTrialAvailability()
+        .then((data) => setCanTrial(data.canTakeTrial))
+        .catch((err) => console.error("Trial check failed:", err));
       try {
-        const trialData = await checkTrialAvailability();
-        setCanTrial(trialData.canTakeTrial);
         const cats = await getCategories();
-        setCategories(cats);
-        const subsPromises = cats.map((cat) =>
-          getSubCategories({ category: cat }),
-        );
-        const subs = await Promise.all(subsPromises);
-        setSubCategories(subs.flat());
+        if (Array.isArray(cats)) {
+          setCategories(cats);
+          const subsPromises = cats.map((cat) =>
+            getSubCategories({ category: cat }).catch((err) => {
+              console.error(`Failed to fetch subs for ${cat}:`, err);
+              return [];
+            }),
+          );
+          const subsResults = await Promise.all(subsPromises);
+          setSubCategories(subsResults.flat());
+        }
       } catch (error) {
-        console.error("Error fetching static data:", error);
+        console.error("Error fetching categories:", error);
       }
     }
 
