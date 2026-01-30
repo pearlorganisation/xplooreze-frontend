@@ -149,7 +149,8 @@ Team Xplooreze
                       Home Tutoring
                     </Link>
                     <Link
-                      to="/authentication?authType=registration&userRole=student&tutoringMode=Online%20Tutoring"
+                      // to="/authentication?authType=registration&userRole=student&tutoringMode=Online%20Tutoring"
+                      to="/student-dashboard"
                       className="welcome-page-dropdown-item"
                       onClick={() => setShowDropdown(false)}
                     >
