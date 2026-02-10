@@ -3,7 +3,7 @@ import "./NavBar.css";
 import { useEffect, useRef, useState } from "react";
 
 import { APP_NAME } from "../../data/config.js";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useMatch } from "react-router-dom";
 import { useAuth } from "../../hooks/AuthProvider.jsx";
 import NavBar from "./NavBar.jsx";
 
@@ -17,6 +17,8 @@ function StudentNavBar() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const location = useLocation();
+
+  const isSearchPage = useMatch("/:category/:mode/:subject");
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -42,10 +44,18 @@ function StudentNavBar() {
           </a>
         </div>
         <ul className={`nav-links ${open ? "mobile" : ""}`} ref={ref}>
-          <li>
+          {/* <li>
             <Link
               to="/student-dashboard"
               className={`nav-link ${location.pathname === "/student-dashboard" ? "active" : ""}`}
+            >
+              Find Tutors
+            </Link>
+          </li> */}
+          <li>
+            <Link
+              to="/categories" // Redirect to categories to start search
+              className={`nav-link ${isSearchPage || location.pathname === "/student-dashboard" ? "active" : ""}`}
             >
               Find Tutors
             </Link>

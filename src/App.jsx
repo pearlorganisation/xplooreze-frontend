@@ -67,11 +67,15 @@ function AppContent() {
     "/favourite-tutors",
     "/tutor-details",
   ];
+
+  const isTutorSearchPage = location.pathname.split("/").length === 4;
+
   const hideStudentNav =
     !hideNav ||
-    !pageRequiringStudentNavBar.find((path) =>
+    (!pageRequiringStudentNavBar.find((path) =>
       location.pathname.startsWith(path),
-    );
+    ) &&
+      !isTutorSearchPage);
 
   return (
     <div
@@ -164,7 +168,11 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
+        {/* <Route path="/student-dashboard" element={<StudentDashboard />} /> */}
+        <Route
+          path="/:category/:mode/:subject"
+          element={<StudentDashboard />}
+        />
         <Route path="/categories" element={<CategoryPage />} />
         <Route path="/categories/:categoryName" element={<SubCategoryPage />} />
         <Route
