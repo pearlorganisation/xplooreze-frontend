@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 // 1. Import useSearchParams
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import {
   getTutors,
   checkTrialAvailability,
@@ -46,6 +46,16 @@ const getArrayFromParams = (params, key) => {
 export default function StudentDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const { category, mode, subject } = useParams();
+
+  const formatFromUrl = (str) => {
+    if (!str || str.includes("all-") || str.includes("any-")) return null;
+    return decodeURIComponent(str)
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   // Tutors and Loading
   const [tutors, setTutors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,16 +94,35 @@ export default function StudentDashboard() {
     const page = Number(searchParams.get("page")) || 1;
     const sortBy = searchParams.get("sortBy") || "relevance";
     const searchQuery = searchParams.get("search") || "";
+
+    // Get arrays from Query Params (?subjects=Math)
+    let subjectsFromQuery = getArrayFromParams(searchParams, "subjects");
+    let modeFromQuery = getArrayFromParams(searchParams, "mode");
+
+    // Get single values from Path Params (/academics/online/math)
+    const subjectFromPath = formatFromUrl(subject);
+    const modeFromPath = formatFromUrl(mode);
+
+    // Merge them: Priority to Path, then add Query selections
+    const finalSubjects = subjectFromPath
+      ? [...new Set([subjectFromPath, ...subjectsFromQuery])]
+      : subjectsFromQuery;
+
+    const finalModes = modeFromPath
+      ? [...new Set([modeFromPath, ...modeFromQuery])]
+      : modeFromQuery;
+
     const filters = {
-      mode: getArrayFromParams(searchParams, "mode"),
-      subjects: getArrayFromParams(searchParams, "subjects"),
+      mode: finalModes,
+      subjects: finalSubjects,
       priceMin: searchParams.get("priceMin") || "",
       priceMax: searchParams.get("priceMax") || "",
       days: getArrayFromParams(searchParams, "days"),
       timeRanges: getArrayFromParams(searchParams, "timeRanges"),
     };
+
     return { page, sortBy, searchQuery, filters };
-  }, [searchParams.toString()]);
+  }, [searchParams, category, mode, subject]);
 
   // Local state for debouncing search (Unchanged)
   const [localSearch, setLocalSearch] = useState(searchQuery);
@@ -114,11 +143,33 @@ export default function StudentDashboard() {
   }, [debouncedSearchQuery, searchQuery, searchParams, setSearchParams]);
 
   // Main data fetching function
+  // const fetchTutors = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const params = new URLSearchParams(searchParams); // It will still work with the object
+  //     const { tutors: fetchedTutors, pagination } = await getTutors(params);
+  //     setTutors(fetchedTutors);
+  //     setTotalPages(pagination.pages);
+  //     setTotalResults(pagination.total);
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [searchParams.toString()]);
+
   const fetchTutors = useCallback(async () => {
     setIsLoading(true);
     try {
-      const params = new URLSearchParams(searchParams); // It will still work with the object
-      const { tutors: fetchedTutors, pagination } = await getTutors(params);
+      // Create a combined set of params for the API
+      const apiParams = new URLSearchParams(searchParams);
+
+      // If path params exist, ensure they are sent to the backend
+      if (formatFromUrl(subject))
+        apiParams.append("subjects", formatFromUrl(subject));
+      if (formatFromUrl(mode)) apiParams.append("mode", formatFromUrl(mode));
+
+      const { tutors: fetchedTutors, pagination } = await getTutors(apiParams);
       setTutors(fetchedTutors);
       setTotalPages(pagination.pages);
       setTotalResults(pagination.total);
@@ -127,7 +178,7 @@ export default function StudentDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [searchParams.toString()]);
+  }, [searchParams, subject, mode]);
 
   // Fetch static data on mount (Unchanged)
   useEffect(() => {

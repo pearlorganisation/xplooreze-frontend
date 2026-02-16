@@ -141,16 +141,14 @@ Team Xplooreze
                 {showDropdown && (
                   <div className="welcome-page-dropdown-menu">
                     <Link
-                      // to='/authentication?authType=registration&userRole=student&tutoringMode=Home%20Tutoring'
-                      to="/student-dashboard"
+                      to="/all-categories/home-tutoring/all-subjects"
                       className="welcome-page-dropdown-item"
                       onClick={() => setShowDropdown(false)}
                     >
                       Home Tutoring
                     </Link>
                     <Link
-                      // to="/authentication?authType=registration&userRole=student&tutoringMode=Online%20Tutoring"
-                      to="/student-dashboard"
+                      to="/all-categories/online-tutoring/all-subjects"
                       className="welcome-page-dropdown-item"
                       onClick={() => setShowDropdown(false)}
                     >

@@ -27,7 +27,12 @@ const SubCategoryPage = () => {
   }, [categoryName]);
 
   const handleSubSelect = (sub) => {
-    navigate(`/student-dashboard?subjects=${encodeURIComponent(sub)}`);
+    const cat = categoryName.toLowerCase().replace(/\s+/g, "-");
+    const subject = sub.toLowerCase().replace(/\s+/g, "-");
+
+    const mode = "online-tutoring";
+
+    navigate(`/${cat}/${mode}/${subject}`);
   };
 
   if (loading)
