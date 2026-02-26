@@ -44,6 +44,8 @@ import CategoryPage from "./pages/student/category/CategoryPage";
 
 function AppContent() {
   const location = useLocation();
+  // const pathSegments = location.pathname.split("/").filter(Boolean);
+
   const pageRequiringNavBar = [
     "/welcome",
     "/blogs",
