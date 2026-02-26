@@ -17,6 +17,8 @@ function StudentNavBar() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const location = useLocation();
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+  const isDashboardActive = pathSegments.length === 3;
 
   const isSearchPage = useMatch("/:category/:mode/:subject");
 
@@ -55,10 +57,17 @@ function StudentNavBar() {
           <li>
             <Link
               to="/categories" // Redirect to categories to start search
-              className={`nav-link ${isSearchPage || location.pathname === "/student-dashboard" ? "active" : ""}`}
+              // className={`nav-link ${isSearchPage || location.pathname === "/student-dashboard" ? "active" : ""}`}
+              className={`nav-link ${isSearchPage || location.pathname === "/all-categories/any-mode/all-subjects" ? "active" : ""}`}
             >
               Find Tutors
             </Link>
+            {/* <Link
+              to="/all-categories/any-mode/all-subjects"
+              className={`nav-link ${isDashboardActive ? "active" : ""}`}
+            >
+              Find Tutors
+            </Link> */}
           </li>
           <li>
             <Link
@@ -74,6 +83,14 @@ function StudentNavBar() {
               className={`nav-link ${location.pathname === "/favourite-tutors" ? "active" : ""}`}
             >
               Favourites
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/categories"
+              className={`nav-link ${location.pathname === "/blogs" ? "active" : ""}`}
+            >
+              Category
             </Link>
           </li>
           <li>

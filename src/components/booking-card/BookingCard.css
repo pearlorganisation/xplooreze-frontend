@@ -1,255 +1,259 @@
 /* Base styles from BookingCard.css */
 .booking-card {
-    background: var(--brand-white);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    border: 1px solid var(--brand-grey);
-    overflow: hidden;
-    margin-bottom: var(--space-4);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  background: var(--brand-white);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--brand-grey);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.2s ease;
 }
 
 .booking-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .booking-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: var(--space-4) var(--space-5) var(--space-3);
-    border-bottom: 1px solid var(--brand-grey);
-    gap: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  border-bottom: 1px solid var(--brand-grey);
+  gap: var(--space-3);
 }
 
 .tutor-info {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
 }
 
 .tutor-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-round);
-    object-fit: cover;
-    border: 2px solid var(--brand-grey);
-    flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-round);
+  object-fit: cover;
+  border: 2px solid var(--brand-grey);
+  flex-shrink: 0;
 }
 
 .tutor-details {
-    flex: 1;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+  flex: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .tutor-name {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-bold);
-    color: var(--brand-black);
-    margin: 0 0 var(--space-0) 0;
-    line-height: var(--line-height-tight);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  margin: 0 0 var(--space-0) 0;
+  line-height: var(--line-height-tight);
 }
 
 .tutor-headline {
-    font-size: var(--font-size-xs);
-    color: var(--secondary-color);
-    margin: var(--space-0);
-    line-height: var(--line-height-normal);
+  font-size: var(--font-size-xs);
+  color: var(--secondary-color);
+  margin: var(--space-0);
+  line-height: var(--line-height-normal);
 }
 
 .requested-at {
-    font-size: var(--font-size-xs);
-    color: var(--secondary-color);
-    margin: 0;
-    font-style: italic;
+  font-size: var(--font-size-xs);
+  color: var(--secondary-color);
+  margin: 0;
+  font-style: italic;
 }
 
 .mode-tags {
-    display: flex;
-    gap: var(--space-2);
-    margin-top: var(--space-1);
-    flex-wrap: wrap;
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  flex-wrap: wrap;
 }
 
 .mode-tag {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-medium);
-    color: var(--brand-white);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-medium);
+  color: var(--brand-white);
 }
 
 .mode-tag.online {
-    background: var(--primary-color);
+  background: var(--primary-color);
 }
 
 .mode-tag.in-person {
-    background: var(--secondary-color);
+  background: var(--secondary-color);
 }
 
 .mode-tag svg {
-    font-size: var(--font-size-xs);
+  font-size: var(--font-size-xs);
 }
 
 .status-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
 }
 
 .status-badge {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-medium);
-    min-width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-medium);
+  min-width: fit-content;
 }
 
 .status-badge svg {
-    font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm);
 }
 
 .rejection-note {
-    font-size: var(--font-size-xs);
-    color: var(--brand-black);
-    margin: 0;
-    text-align: right;
-    font-style: italic;
-    background: rgba(237, 90, 9, 0.1);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-sm);
-    border-left: 2px solid var(--primary-color);
+  font-size: var(--font-size-xs);
+  color: var(--brand-black);
+  margin: 0;
+  text-align: right;
+  font-style: italic;
+  background: rgba(237, 90, 9, 0.1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border-left: 2px solid var(--primary-color);
 }
 
 .booking-body {
-    padding: var(--space-3) var(--space-5);
-    background-color: #f9fafb;
-    /* Light bg for tile contrast */
+  padding: var(--space-3) var(--space-5);
+  background-color: #f9fafb;
+  /* Light bg for tile contrast */
 }
 
 .detail-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-3);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
 }
 
 .detail-tile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
-    padding: var(--space-3);
-    background: var(--brand-white);
-    /* White background */
-    border: 1px solid #eee;
-    /* Lighter border */
-    border-radius: var(--radius-lg);
-    /* Larger radius */
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--brand-white);
+  /* White background */
+  border: 1px solid #eee;
+  /* Lighter border */
+  border-radius: var(--radius-lg);
+  /* Larger radius */
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .detail-tile:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 2px 4px rgba(237, 90, 9, 0.1);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(237, 90, 9, 0.1);
 }
 
 .tile-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .tile-label {
-    display: block;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-bold);
-    color: var(--brand-black);
-    margin-bottom: var(--space-2);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .tile-value {
-    display: block;
-    font-size: var(--font-size-sm);
-    color: var(--secondary-color);
-    line-height: var(--line-height-tight);
-    font-weight: var(--font-regular);
-    word-break: break-word;
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--secondary-color);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-regular);
+  word-break: break-word;
 }
 
 .mode-tile {
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .mode-tile .tile-content {
-    align-items: center;
-    text-align: center;
+  align-items: center;
+  text-align: center;
 }
 
 .mode-tags {
-    display: flex;
-    gap: var(--space-2);
-    justify-content: center;
-    margin-top: var(--space-1);
-    flex-wrap: wrap;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-top: var(--space-1);
+  flex-wrap: wrap;
 }
 
 .booking-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-3) var(--space-5);
-    border-top: 1px solid var(--brand-grey);
-    background: var(--brand-white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--brand-grey);
+  background: var(--brand-white);
 }
 
 .price-section {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .price-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-color);
+  width: 16px;
+  height: 16px;
+  color: var(--primary-color);
 }
 
 .price-amount {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-bold);
-    color: var(--primary-color);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-bold);
+  color: var(--primary-color);
 }
 
 .price-label {
-    font-size: var(--font-size-xs);
-    color: var(--secondary-color);
-    margin-left: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--secondary-color);
+  margin-left: var(--space-1);
 }
 
 /* --- THIS IS THE FIX --- */
 .action-section {
-    display: flex;
-    gap: var(--space-2);
-    /* flex: 1; */
-    /* <-- THIS WAS THE MISTAKE, IT'S NOW REMOVED */
-    justify-content: flex-end;
+  display: flex;
+  gap: var(--space-2);
+  /* flex: 1; */
+  /* <-- THIS WAS THE MISTAKE, IT'S NOW REMOVED */
+  justify-content: flex-end;
 }
 
 /* --- END FIX --- */
@@ -258,401 +262,422 @@
 /* -------------------------------------------------------------------------- */
 /* --- Student Buttons --- */
 .profile-btn {
-    background: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    white-space: nowrap;
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .profile-btn:hover {
-    background: var(--primary-color);
-    color: var(--brand-white);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(237, 90, 9, 0.2);
+  background: var(--primary-color);
+  color: var(--brand-white);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(237, 90, 9, 0.2);
 }
 
 .pay-btn {
-    background: var(--primary-color);
-    /* Orange for payment */
-    color: var(--brand-white);
-    border: none;
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+  background: var(--primary-color);
+  /* Orange for payment */
+  color: var(--brand-white);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .pay-btn:hover {
-    background: #af5d00;
-    /* Darker orange */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+  background: #af5d00;
+  /* Darker orange */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
 }
 
 /* --- Common Button --- */
 .start-class-btn {
-    background: var(--primary-color);
-    color: var(--brand-white);
-    border: none;
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+  background: var(--primary-color);
+  color: var(--brand-white);
+  border: none;
+  padding: var(--space-2) var(--space-6);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 180px; /* Increase width */
+  text-align: center;
 }
 
 .start-class-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(237, 90, 9, 0.2);
+  background: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(237, 90, 9, 0.2);
+}
+
+.highlight-flash {
+  animation: flashEffect 1.2s infinite ease-in-out;
+}
+
+@keyframes flashEffect {
+  0% {
+    box-shadow: 0 0 10px rgba(237, 90, 9, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(237, 90, 9, 0.9);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(237, 90, 9, 0.5);
+    transform: scale(1);
+  }
 }
 
 /* --- Tutor Buttons --- */
 .reject-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
 }
 
 .reject-textarea {
-    width: 100%;
-    padding: var(--space-2);
-    border: 1px solid var(--brand-grey);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-    font-family: inherit;
-    resize: vertical;
-    min-height: 60px;
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--brand-grey);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
 }
 
 .reject-buttons {
-    display: flex;
-    gap: var(--space-2);
-    justify-content: flex-end;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
 }
 
 .accept-btn {
-    background: #10b981;
-    /* Green */
-    color: var(--brand-white);
-    border: none;
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    flex: 1;
+  background: #10b981;
+  /* Green */
+  color: var(--brand-white);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .accept-btn:hover {
-    background: #059669;
-    /* Darker green */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  background: #059669;
+  /* Darker green */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
 .reject-btn {
-    background: #ef4444;
-    /* Red */
-    color: var(--brand-white);
-    border: none;
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    flex: 1;
+  background: #ef4444;
+  /* Red */
+  color: var(--brand-white);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .reject-btn:hover {
-    background: #dc2626;
-    /* Darker red */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+  background: #dc2626;
+  /* Darker red */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .reject-submit-btn {
-    background: #ef4444;
-    /* Red */
-    color: var(--brand-white);
-    border: none;
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    flex: 1;
+  background: #ef4444;
+  /* Red */
+  color: var(--brand-white);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .reject-submit-btn:hover {
-    background: #dc2626;
-    /* Darker red */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+  background: #dc2626;
+  /* Darker red */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
 }
 
 .reject-cancel-btn {
-    background: transparent;
-    color: var(--secondary-color);
-    border: 1px solid var(--secondary-color);
-    padding: var(--space-2) var(--space-4);
-    /* Increased padding */
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    /* Increased font size */
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    flex: 1;
+  background: transparent;
+  color: var(--secondary-color);
+  border: 1px solid var(--secondary-color);
+  padding: var(--space-2) var(--space-4);
+  /* Increased padding */
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  /* Increased font size */
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .reject-cancel-btn:hover {
-    background: var(--secondary-color);
-    color: var(--brand-white);
+  background: var(--secondary-color);
+  color: var(--brand-white);
 }
 
 /* --- BREAKDOWN STYLES --- */
 .breakdown-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--secondary-color);
-    margin-left: var(--space-2);
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    transition: color 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary-color);
+  margin-left: var(--space-2);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease;
 }
 
 .breakdown-btn:hover {
-    color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .breakdown-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .breakdown-content {
-    background: var(--brand-white);
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-height: 80vh;
-    overflow-y: auto;
+  background: var(--brand-white);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .breakdown-content h4 {
-    margin: 0 0 var(--space-3) 0;
-    color: var(--brand-black);
-    text-align: center;
+  margin: 0 0 var(--space-3) 0;
+  color: var(--brand-black);
+  text-align: center;
 }
 
 .breakdown-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--space-2);
-    padding: var(--space-1) 0;
-    border-bottom: 1px solid #eee;
-    font-size: var(--font-size-sm);
-    color: var(--brand-black);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid #eee;
+  font-size: var(--font-size-sm);
+  color: var(--brand-black);
 }
 
 .breakdown-item span:first-child {
-    font-weight: var(--font-medium);
-    color: var(--secondary-color);
+  font-weight: var(--font-medium);
+  color: var(--secondary-color);
 }
 
 .breakdown-item span:last-child {
-    font-weight: var(--font-bold);
-    color: var(--brand-black);
+  font-weight: var(--font-bold);
+  color: var(--brand-black);
 }
 
 .breakdown-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .breakdown-item.total {
-    border-top: 2px solid var(--primary-color);
-    margin-top: var(--space-2);
-    padding-top: var(--space-2);
-    font-size: var(--font-size-md);
-    font-weight: var(--font-bold);
+  border-top: 2px solid var(--primary-color);
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-bold);
 }
 
 .breakdown-content button {
-    width: 100%;
-    margin-top: var(--space-3);
-    padding: var(--space-2);
-    background: var(--primary-color);
-    color: var(--brand-white);
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-medium);
-    transition: background 0.2s ease;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  background: var(--primary-color);
+  color: var(--brand-white);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-medium);
+  transition: background 0.2s ease;
 }
 
 .breakdown-content button:hover {
-    background: #af5d00;
+  background: #af5d00;
 }
 
 /* --- RATING TILE STYLES --- */
 .rating-tile {
-    grid-column: span 2;
-    margin-top: var(--space-3);
+  grid-column: span 2;
+  margin-top: var(--space-3);
 }
 
 .rating-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .rating-label {
-    font-size: var(--font-size-xs);
-    color: var(--secondary-color);
-    font-style: italic;
+  font-size: var(--font-size-xs);
+  color: var(--secondary-color);
+  font-style: italic;
 }
 
 .no-rating-text {
-    font-size: var(--font-size-sm);
-    color: var(--secondary-color);
-    font-style: italic;
+  font-size: var(--font-size-sm);
+  color: var(--secondary-color);
+  font-style: italic;
 }
 
 /* -------------------------------------------------------------------------- */
 /* --- MEDIA QUERIES (UPDATED) --- */
 /* -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
-    .booking-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-2);
-        padding: var(--space-3) var(--space-4) var(--space-2);
-    }
+  .booking-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4) var(--space-2);
+  }
 
-    .tutor-info {
-        justify-content: flex-start;
-    }
+  .tutor-info {
+    justify-content: flex-start;
+  }
 
-    .status-container {
-        align-items: stretch;
-        flex-direction: row;
-        justify-content: space-between;
-    }
+  .status-container {
+    align-items: stretch;
+    flex-direction: row;
+    justify-content: space-between;
+  }
 
-    .rejection-note {
-        text-align: left;
-        order: -1;
-        width: 100%;
-    }
+  .rejection-note {
+    text-align: left;
+    order: -1;
+    width: 100%;
+  }
 
-    .detail-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-2);
-    }
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
 
-    .detail-tile {
-        padding: var(--space-2);
-    }
+  .detail-tile {
+    padding: var(--space-2);
+  }
 
-    .booking-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-3);
-        /* Increased gap */
-        padding: var(--space-3) var(--space-4);
-    }
+  .booking-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    /* Increased gap */
+    padding: var(--space-3) var(--space-4);
+  }
 
-    .price-section {
-        justify-content: flex-start;
-    }
+  .price-section {
+    justify-content: flex-start;
+  }
 
-    /* --- THIS IS THE FIX --- */
-    /* Default action section (non-pending-tutor) */
-    .action-section {
-        flex-direction: row;
-        /* Keep as row */
-        flex-wrap: wrap;
-        /* Allow wrapping */
-        justify-content: flex-start;
-        /* Align to start */
-        gap: var(--space-2);
-        /* Add gap for wrapped buttons */
-    }
+  /* --- THIS IS THE FIX --- */
+  /* Default action section (non-pending-tutor) */
+  .action-section {
+    flex-direction: row;
+    /* Keep as row */
+    flex-wrap: wrap;
+    /* Allow wrapping */
+    justify-content: flex-start;
+    /* Align to start */
+    gap: var(--space-2);
+    /* Add gap for wrapped buttons */
+  }
 
-    /* Remove full-width stretch for default buttons */
-    .profile-btn,
-    .pay-btn,
-    .start-class-btn,
-    .accept-btn,
-    .reject-btn {
-        width: auto;
-        /* Let them be their natural width */
-        flex: 1 1 auto;
-        /* Allow grow, shrink, but auto basis */
-    }
+  /* Remove full-width stretch for default buttons */
+  .profile-btn,
+  .pay-btn,
+  .start-class-btn,
+  .accept-btn,
+  .reject-btn {
+    width: auto;
+    /* Let them be their natural width */
+    flex: 1 1 auto;
+    /* Allow grow, shrink, but auto basis */
+  }
 
-    /* Special handling for reject form buttons on mobile */
-    .reject-buttons {
-        flex-direction: column;
-    }
+  /* Special handling for reject form buttons on mobile */
+  .reject-buttons {
+    flex-direction: column;
+  }
 
-    .reject-submit-btn,
-    .reject-cancel-btn {
-        flex: 1;
-        width: 100%;
-        /* These CAN be full width */
-    }
+  .reject-submit-btn,
+  .reject-cancel-btn {
+    flex: 1;
+    width: 100%;
+    /* These CAN be full width */
+  }
 
-    /* --- END FIX --- */
-    .breakdown-content {
-        width: 95%;
-        padding: var(--space-3);
-    }
+  /* --- END FIX --- */
+  .breakdown-content {
+    width: 95%;
+    padding: var(--space-3);
+  }
 }
