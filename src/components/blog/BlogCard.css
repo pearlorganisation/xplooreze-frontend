@@ -1,56 +1,56 @@
 .blog-card {
-    display: flex;
-    gap: var(--space-4);
-    flex-direction: column;
-    align-items: start;
-    margin: 0;
-    padding: var(--space-3);
-    cursor: pointer;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background-color: var(--brand-white);
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-    transition: box-shadow 0.3s ease;
+  display: flex;
+  gap: var(--space-4);
+  flex-direction: column;
+  align-items: start;
+  margin: 0;
+  padding: var(--space-3);
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background-color: var(--brand-white);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: box-shadow 0.3s ease;
 }
 
 .blog-card img {
-    border-radius: var(--radius-lg);
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
 }
 
 .blog-card h1 {
-    margin: var(--space-0);
-    padding: var(--space-0);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-bold);
-    text-align: start;
-    color: var(--brand-black);
+  margin: var(--space-0);
+  padding: var(--space-0);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-bold);
+  text-align: start;
+  color: var(--brand-black);
 }
 
 .blog-card p {
-    margin: var(--space-0);
-    padding: var(--space-0);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-light);
-    color: grey;
-    text-align: start;
-    line-height: var(--line-height-relaxed);
+  margin: var(--space-0);
+  padding: var(--space-0);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-light);
+  color: grey;
+  text-align: start;
+  line-height: var(--line-height-relaxed);
 }
 
 @media (max-width: 768px) {
-    .blog-card {
-        width: 100%;
-    }
+  .blog-card {
+    width: 100%;
+  }
 
-    .blog-card h1 {
-        font-size: var(--font-size-md);
-    }
+  .blog-card h1 {
+    font-size: var(--font-size-md);
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .blog-card:hover {
-        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-    }
+  .blog-card:hover {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+  }
 }
