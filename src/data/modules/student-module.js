@@ -30,6 +30,32 @@ export async function getTutor({ tutorId }) {
   }
 }
 
+// --- Get SubCategory Meta ---
+export async function getSubCategoryMeta({ categoryName, subCategoryName }) {
+  const defaultError = "Something went wrong while fetching subcategory meta.";
+
+  try {
+    const response = await api.get("/subcategory/meta", {
+      params: { categoryName, subCategoryName },
+    });
+
+    if (response.data.success === true) {
+      return response.data.data;
+      /*
+        {
+          category,
+          subCategory,
+          meta
+        }
+      */
+    }
+
+    throw response.data.message || defaultError;
+  } catch (error) {
+    throw resolveAxiosError(error).message || defaultError;
+  }
+}
+
 export async function bookTutor(formData) {
   const defaultError = "Something went wrong while submitting booking form.";
   try {
