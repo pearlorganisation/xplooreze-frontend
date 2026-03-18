@@ -11,6 +11,7 @@ import {
   getTutors,
   checkTrialAvailability,
   getUpcomingClasses,
+  getSubCategoryMeta,
 } from "../../../data/modules/student-module";
 import TutorCard from "../../../components/tutor-card/TutorCard";
 import Loading from "../../../components/loading/Loading";
@@ -22,6 +23,7 @@ import {
 } from "../../../data/modules/dynamic-module";
 import { FaFilter, FaSearch } from "react-icons/fa";
 import "./StudentDashboard.css";
+import { Helmet } from "react-helmet-async";
 
 // Debounce hook (Unchanged)
 const useDebounce = (value, delay) => {
@@ -47,6 +49,8 @@ export default function StudentDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { category, mode, subject } = useParams();
+
+  const [seoMeta, setSeoMeta] = useState(null);
 
   const formatFromUrl = (str) => {
     if (!str || str.includes("all-") || str.includes("any-")) return null;
@@ -127,6 +131,35 @@ export default function StudentDashboard() {
   // Local state for debouncing search (Unchanged)
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debouncedSearchQuery = useDebounce(localSearch, 500);
+
+  useEffect(() => {
+    async function fetchMetaData() {
+      const categoryName = formatFromUrl(category);
+      const subCategoryName = formatFromUrl(subject);
+
+      if (categoryName && subCategoryName) {
+        try {
+          const response = await getSubCategoryMeta({
+            categoryName,
+            subCategoryName,
+          });
+          setSeoMeta(response);
+        } catch (error) {
+          console.error("Meta API Error:", error);
+          setSeoMeta(null);
+        }
+      } else {
+        setSeoMeta(null);
+      }
+    }
+    fetchMetaData();
+  }, [category, subject]);
+
+  const getMetaValue = (key) => {
+    if (!seoMeta || !seoMeta.meta) return "";
+    const item = seoMeta.meta.find((m) => m.tittle === key);
+    return item ? item.description : "";
+  };
 
   // Effect to update URL from debounced search (Unchanged)
   useEffect(() => {
@@ -372,6 +405,31 @@ export default function StudentDashboard() {
 
   return (
     <div className="student-dashboard">
+      <Helmet>
+        {seoMeta && seoMeta.meta ? (
+          seoMeta.meta.map((item, idx) => {
+            const key = item.tittle;
+            const value = item.description;
+
+            if (key === "metaTitle" || key === "title") {
+              return <title key={idx}>{value}</title>;
+            }
+
+            if (key === "canonicalUrl" || key === "canonical") {
+              return <link key={idx} rel="canonical" href={value} />;
+            }
+
+            if (key.startsWith("og:")) {
+              return <meta key={idx} property={key} content={value} />;
+            }
+
+            return <meta key={idx} name={key} content={value} />;
+          })
+        ) : (
+          // Default title if no meta exists for this subcategory
+          <title>Xplooreze</title>
+        )}
+      </Helmet>
       {/* Search (Unchanged) */}
       <div className="search-section">
         <div className="search-container">
