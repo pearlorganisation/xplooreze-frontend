@@ -220,9 +220,13 @@ export default function StudentDashboard() {
     window.addEventListener("resize", checkMobile);
 
     async function fetchStaticData() {
-      checkTrialAvailability()
-        .then((data) => setCanTrial(data.canTakeTrial))
-        .catch((err) => console.error("Trial check failed:", err));
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        checkTrialAvailability()
+          .then((data) => setCanTrial(data.canTakeTrial))
+          .catch((err) => console.error("Trial check failed:", err));
+      }
       try {
         const cats = await getCategories();
         if (Array.isArray(cats)) {
@@ -248,6 +252,8 @@ export default function StudentDashboard() {
   // Fetch and schedule upcoming class reminders
   useEffect(() => {
     async function setupClassReminders() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
       try {
         const data = await getUpcomingClasses();
         const { classes } = data;
@@ -406,29 +412,28 @@ export default function StudentDashboard() {
   return (
     <div className="student-dashboard">
       <Helmet>
-        {seoMeta && seoMeta.meta ? (
-          seoMeta.meta.map((item, idx) => {
-            const key = item.tittle;
-            const value = item.description;
+        {seoMeta && seoMeta.meta
+          ? seoMeta.meta.map((item, idx) => {
+              const key = item.tittle;
+              const value = item.description;
 
-            if (key === "metaTitle" || key === "title") {
-              return <title key={idx}>{value}</title>;
-            }
+              if (key === "metaTitle" || key === "title") {
+                return <title key={idx}>{value}</title>;
+              }
 
-            if (key === "canonicalUrl" || key === "canonical") {
-              return <link key={idx} rel="canonical" href={value} />;
-            }
+              if (key === "canonicalUrl" || key === "canonical") {
+                return <link key={idx} rel="canonical" href={value} />;
+              }
 
-            if (key.startsWith("og:")) {
-              return <meta key={idx} property={key} content={value} />;
-            }
+              if (key.startsWith("og:")) {
+                return <meta key={idx} property={key} content={value} />;
+              }
 
-            return <meta key={idx} name={key} content={value} />;
-          })
-        ) : (
-          // Default title if no meta exists for this subcategory
-          <title>Xplooreze</title>
-        )}
+              return <meta key={idx} name={key} content={value} />;
+            })
+          : // Default title if no meta exists for this subcategory
+            // <title>Xplooreze</title>
+            null}
       </Helmet>
       {/* Search (Unchanged) */}
       <div className="search-section">
