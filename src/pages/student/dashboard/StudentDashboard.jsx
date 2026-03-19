@@ -424,6 +424,13 @@ export default function StudentDashboard() {
               if (key === "canonicalUrl" || key === "canonical") {
                 return <link key={idx} rel="canonical" href={value} />;
               }
+              if (key === "metaDescription" || key === "description") {
+                return <meta key={idx} name="description" content={value} />;
+              }
+
+              if (key === "metaKeywords" || key === "keywords") {
+                return <meta key={idx} name="keywords" content={value} />;
+              }
 
               if (key.startsWith("og:")) {
                 return <meta key={idx} property={key} content={value} />;
