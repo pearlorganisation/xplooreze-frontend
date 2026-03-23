@@ -11,7 +11,7 @@ import {
   updateClassJoin,
 } from "../../data/modules/booking-module";
 
-// --- Import Firestore services ---
+// --- Import Firestore services -s--
 import {
   listenToWhiteboard,
   updateWhiteboardElements,
