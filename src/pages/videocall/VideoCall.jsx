@@ -69,7 +69,7 @@ const VideoCall = () => {
   const [error, setError] = useState("");
 
   const isUpdatingFromRemoteRef = useRef(false);
-
+  //s
   const debounceHandlerRef = useRef(null);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const excalidrawApiRef = useRef(null);
