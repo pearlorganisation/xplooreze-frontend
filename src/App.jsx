@@ -41,6 +41,7 @@ import { BankDetailsPage } from "./pages/tutor/bank-details/BankDetailsPage";
 import { VerificationPage } from "./pages/tutor/verification-page/VerificationPage";
 import SubCategoryPage from "./pages/student/category/SubCategoryPage";
 import CategoryPage from "./pages/student/category/CategoryPage";
+import { Helmet } from "react-helmet-async";
 
 function AppContent() {
   const location = useLocation();
@@ -80,160 +81,194 @@ function AppContent() {
       !isTutorSearchPage);
 
   return (
-    <div
-      className={
-        location.pathname === "/welcome" ? "app-container" : "container"
-      }
-    >
-      {!hideNav && <NavBar />}
-      {!hideStudentNav && <StudentNavBar />}
-      {/* <StudentNavBar /> */}
-      <ScrollToTop />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainPage />
-            </ProtectedRoute>
-          }
+    <>
+      <Helmet>
+        {/* Google Site Verification */}
+        <meta
+          name="google-site-verification"
+          content="E-WppKQLOHzCc7bwpZxJHJn5MOXbEqTTdfE6e1Irn7k"
         />
-        <Route
-          path="/tutor-dashboard"
-          element={
-            <ProtectedRoute>
-              <TutorDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-requests"
-          element={
-            <ProtectedRoute>
-              <RequestsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-students"
-          element={
-            <ProtectedRoute>
-              <StudentsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-bank-details"
-          element={
-            <ProtectedRoute>
-              <BankDetailsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-payments"
-          element={
-            <ProtectedRoute>
-              <PaymentsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-classes"
-          element={
-            <ProtectedRoute>
-              <ClassesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-account"
-          element={
-            <ProtectedRoute>
-              <TutorAccount />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/verify-tutor"
-          element={
-            <ProtectedRoute>
-              <VerificationPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/video-call/:id"
-          element={
-            <ProtectedRoute>
-              <VideoCall />
-            </ProtectedRoute>
-          }
-        />
-        {/* <Route path="/student-dashboard" element={<StudentDashboard />} /> */}
-        <Route
-          path="/:category/:mode/:subject"
-          element={<StudentDashboard />}
-        />
-        <Route path="/categories" element={<CategoryPage />} />
-        <Route path="/categories/:categoryName" element={<SubCategoryPage />} />
-        <Route
-          path="/student-classes"
-          element={
-            <ProtectedRoute>
-              <MyClasses />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/favourite-tutors"
-          element={
-            <ProtectedRoute>
-              <FavouriteTutors />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/tutor-details/:id"
-          element={
-            // <ProtectedRoute>
-            <TutorDetail />
-            // </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/student-account"
-          element={
-            <ProtectedRoute>
-              <StudentAccount />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/welcome" element={<WelcomePage />} />
-        <Route path="/blogs" element={<BlogPage />} />
-        <Route path="/phd-mentorship" element={<PhdMentorship />} />
-        <Route path="/research-form" element={<ResearchForm />} />
-        <Route path="/consultation-form" element={<ConsultationForm />} />
-        <Route path="/blog-details/:blogId" element={<BlogDetailPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPage />} />
-        <Route
-          path="/cancellation-refund"
-          element={<CancellationRefundPolicy />}
-        />
-        <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        <Route path="/terms-and-conditions" element={<TermsPage />} />
-        <Route path="/about-us" element={<AboutUsPage />} />
-        <Route
-          path="/authentication/*"
-          element={
-            <AntiProtectedRoute>
-              <AuthenticationPage />
-            </AntiProtectedRoute>
-          }
-        />
-      </Routes>
-      <Footer />
-    </div>
+
+        {/* Google Tag Manager Script */}
+        <script>
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-PDBN7L5N');
+          `}
+        </script>
+      </Helmet>
+
+      {/*  GTM NoScript (BODY) */}
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-PDBN7L5N"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        ></iframe>
+      </noscript>
+
+      <div
+        className={
+          location.pathname === "/welcome" ? "app-container" : "container"
+        }
+      >
+        {!hideNav && <NavBar />}
+        {!hideStudentNav && <StudentNavBar />}
+        {/* <StudentNavBar /> */}
+        <ScrollToTop />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-dashboard"
+            element={
+              <ProtectedRoute>
+                <TutorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-requests"
+            element={
+              <ProtectedRoute>
+                <RequestsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-students"
+            element={
+              <ProtectedRoute>
+                <StudentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-bank-details"
+            element={
+              <ProtectedRoute>
+                <BankDetailsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-payments"
+            element={
+              <ProtectedRoute>
+                <PaymentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-classes"
+            element={
+              <ProtectedRoute>
+                <ClassesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-account"
+            element={
+              <ProtectedRoute>
+                <TutorAccount />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/verify-tutor"
+            element={
+              <ProtectedRoute>
+                <VerificationPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/video-call/:id"
+            element={
+              <ProtectedRoute>
+                <VideoCall />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route path="/student-dashboard" element={<StudentDashboard />} /> */}
+          <Route
+            path="/:category/:mode/:subject"
+            element={<StudentDashboard />}
+          />
+          <Route path="/categories" element={<CategoryPage />} />
+          <Route
+            path="/categories/:categoryName"
+            element={<SubCategoryPage />}
+          />
+          <Route
+            path="/student-classes"
+            element={
+              <ProtectedRoute>
+                <MyClasses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/favourite-tutors"
+            element={
+              <ProtectedRoute>
+                <FavouriteTutors />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor-details/:id"
+            element={
+              // <ProtectedRoute>
+              <TutorDetail />
+              // </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-account"
+            element={
+              <ProtectedRoute>
+                <StudentAccount />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/welcome" element={<WelcomePage />} />
+          <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/phd-mentorship" element={<PhdMentorship />} />
+          <Route path="/research-form" element={<ResearchForm />} />
+          <Route path="/consultation-form" element={<ConsultationForm />} />
+          <Route path="/blog-details/:blogId" element={<BlogDetailPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPage />} />
+          <Route
+            path="/cancellation-refund"
+            element={<CancellationRefundPolicy />}
+          />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsPage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route
+            path="/authentication/*"
+            element={
+              <AntiProtectedRoute>
+                <AuthenticationPage />
+              </AntiProtectedRoute>
+            }
+          />
+        </Routes>
+        <Footer />
+      </div>
+    </>
   );
 }
 
