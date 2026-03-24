@@ -433,7 +433,7 @@ export default function BookingCard({ booking, isTutor, onAccept, onReject }) {
 
   // const isFutureClass = isOnline && isActive && !isLiveNow;
 
-  // --- HANDLERS (ALL) ---
+  // --- HANDLERS (ALL) ---d
   const handleStartClass = () => {
     navigate(`/video-call/${booking._id}`, { state: { booking, isTutor } });
   };
