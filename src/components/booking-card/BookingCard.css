@@ -312,17 +312,26 @@
   background: var(--primary-color);
   color: var(--brand-white);
   border: none;
-  padding: var(--space-2) var(--space-6);
-  /* Increased padding */
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
-  /* Increased font size */
   font-weight: var(--font-medium);
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
-  width: 180px; /* Increase width */
+
+  /* 🔥 FIX START */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  width: auto; /*  remove fixed width */
+  max-width: 100%; /* prevent overflow */
+  white-space: normal; /* allow wrapping */
   text-align: center;
+  word-break: break-word; /* break long text */
+  flex-wrap: wrap; /* wrap if needed */
+  /* 🔥 FIX END */
 }
 
 .start-class-btn:hover {

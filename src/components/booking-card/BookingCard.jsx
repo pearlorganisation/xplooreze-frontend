@@ -907,11 +907,18 @@ export default function BookingCard({ booking, isTutor, onAccept, onReject }) {
 
                 {/* TUTOR FUTURE SCHEDULE */}
                 {isFutureClass && (
+                  // <div className="start-class-btn highlight-flash future-schedule">
+
+                  //   {formatLocalDate(booking.startDate)}{" "}
+                  //   {formatTime(booking.startTime)}
+                  // </div>
                   <div className="start-class-btn highlight-flash future-schedule">
-                    {/* <FaClock className="icon" /> */}
-                    {/* Join Class at {formatLocalDate(booking.startDate)}{" "} */}
-                    {formatLocalDate(booking.startDate)}{" "}
-                    {formatTime(booking.startTime)}
+                    <span className="join-text">Join Class at</span>
+
+                    <span className="date-time">
+                      {formatLocalDate(booking.startDate)}{" "}
+                      {formatTime(booking.startTime)}
+                    </span>
                   </div>
                 )}
               </>
@@ -942,10 +949,12 @@ export default function BookingCard({ booking, isTutor, onAccept, onReject }) {
               {/* STUDENT FUTURE SCHEDULE */}
               {isFutureClass && (
                 <div className="start-class-btn highlight-flash future-schedule">
-                  {/* <FaClock className="icon" /> */}
-                  {/* Join Class at {formatLocalDate(booking.startDate)}{" "} */}
-                  {formatLocalDate(booking.startDate)}{" "}
-                  {formatTime(booking.startTime)}
+                  <span className="join-text">Join Class at</span>
+
+                  <span className="date-time">
+                    {formatLocalDate(booking.startDate)}{" "}
+                    {formatTime(booking.startTime)}
+                  </span>
                 </div>
               )}
             </>
