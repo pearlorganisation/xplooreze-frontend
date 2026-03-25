@@ -136,17 +136,17 @@ body {
 
 .lobby-card {
   display: flex;
-  gap: 50px;
-  align-items: center;
+  gap: 30px;
   background: #2d2e31;
-  padding: 40px;
+  padding: 30px;
   border-radius: 12px;
+  align-items: center;
 }
 
 .lobby-preview {
   position: relative;
-  width: 480px;
-  height: 270px;
+  width: 350px;
+  height: 200px;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
@@ -161,27 +161,27 @@ body {
 
 .lobby-controls {
   position: absolute;
-  bottom: 15px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 15px;
+  gap: 10px;
 }
 
 .lobby-controls button,
-.ctrl-btn {
-  width: 45px;
-  height: 45px;
+.ctrl {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid #5f6368;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   cursor: pointer;
 }
 
 .lobby-controls button.off,
-.ctrl-btn.red {
-  background: #ea4335;
+.ctrl.red {
+  background: #ea4335 !important;
   border-color: #ea4335;
 }
 
@@ -189,87 +189,110 @@ body {
   background: #1a73e8;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 24px;
+  padding: 10px 25px;
+  border-radius: 20px;
   font-weight: bold;
-  margin-top: 20px;
   cursor: pointer;
 }
 
-/* Call Layout */
 .call-page {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background: #202124;
+  overflow: hidden;
 }
 
 .main-layout {
   flex: 1;
   display: flex;
+  padding: 10px;
+  gap: 10px;
   overflow: hidden;
-  padding: 15px;
-  gap: 15px;
 }
 
-.video-grid {
+/* When whiteboard is open, videos go to a side column */
+.wb-open .video-column {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wb-open .v-tile {
+  height: 140px;
+  width: 100%;
+}
+
+/* When whiteboard is closed, videos fill the screen */
+.wb-closed .video-column {
   flex: 1;
   display: grid;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
 
-.whiteboard-mode .video-grid {
-  flex: 0 0 250px;
-  /* Sidebar for videos when whiteboard is on */
+.wb-closed .v-tile {
+  height: 100%;
 }
 
-.whiteboard-container {
-  flex: 3;
+.wb-container {
+  flex: 1;
   background: white;
   border-radius: 8px;
   overflow: hidden;
 }
 
-.video-tile {
+.v-tile {
   position: relative;
   background: #3c4043;
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #5f6368;
 }
 
-video {
+.v-tile video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.name-tag {
+.n-tag {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 5px;
+  left: 5px;
   background: rgba(0, 0, 0, 0.5);
-  padding: 4px 12px;
+  padding: 2px 8px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
   color: white;
 }
 
+.v-off {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa0a6;
+}
+
 .call-footer {
-  height: 80px;
-  background: #202124;
+  height: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
+  background: #202124;
 }
 
-.end-call {
-  background: #ea4335 !important;
-  border: none !important;
-}
-
-.ctrl-btn.active {
+.ctrl.active {
   background: #1a73e8;
   border-color: #1a73e8;
+}
+
+.ctrl.end {
+  background: #ea4335;
+  border: none;
+  width: 55px;
+  border-radius: 25px;
 }

@@ -1150,14 +1150,12 @@ import { Excalidraw } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
 import "./VideoCall.css";
 
-// --- API & Firestore Services ---
 import { startClassJoin, updateClassJoin } from "../../data/modules/booking-module";
 import { listenToWhiteboard, updateWhiteboardElements } from "./whiteboard-services";
 
-// --- Icons ---
 import {
   FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash,
-  FaPhoneSlash, FaExpand, FaChalkboard, FaUser
+  FaPhoneSlash, FaChalkboard, FaUser
 } from "react-icons/fa";
 
 const VideoCall = () => {
@@ -1165,31 +1163,27 @@ const VideoCall = () => {
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
 
-  // --- Refs ---
+  // Refs
   const sessionRef = useRef(null);
   const localStreamRef = useRef(null);
+  const [remoteStream, setRemoteStream] = useState(null);
   const isMountedRef = useRef(true);
-  const processingSessionId = useRef(null);
   const excalidrawApiRef = useRef(null);
   const isUpdatingFromRemoteRef = useRef(false);
   const debounceHandlerRef = useRef(null);
   const firestoreUnsubscribeRef = useRef(null);
 
-  // --- State ---
-  const [callState, setCallState] = useState("lobby"); // lobby | connecting | active | ended
+  // State
+  const [callState, setCallState] = useState("lobby");
   const [error, setError] = useState("");
   const [mediaStatus, setMediaStatus] = useState({ video: true, audio: true });
   const [hasHardware, setHasHardware] = useState({ video: false, audio: false });
-  const [showWhiteboard, setShowWhiteboard] = useState(false);
-  const [isExcalidrawReady, setIsExcalidrawReady] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(true);
 
-  if (!booking) return <div className="error-screen">No booking data found.</div>;
+  const currentUser = isTutor ? booking?.tutorId : booking?.studentId;
+  const opponentUser = isTutor ? booking?.studentId : booking?.tutorId;
 
-  const currentUser = isTutor ? booking.tutorId : booking.studentId;
-  const opponentUser = isTutor ? booking.studentId : booking.tutorId;
-  const opponentId = parseInt(opponentUser.cb_id);
-
-  // --- 1. Device Check & Lobby Preview ---
+  // --- 1. Initial Device Setup & Lobby ---
   useEffect(() => {
     const initLobby = async () => {
       try {
@@ -1199,7 +1193,6 @@ const VideoCall = () => {
         const videoEl = document.getElementById("lobbyPreview");
         if (videoEl) videoEl.srcObject = stream;
       } catch (e) {
-        console.warn("Hardware not found, proceeding in audio/no-media mode", e);
         setHasHardware({ video: false, audio: false });
         setMediaStatus({ video: false, audio: false });
       }
@@ -1210,7 +1203,7 @@ const VideoCall = () => {
     };
   }, []);
 
-  // --- 2. SDK Connection ---
+  // --- 2. SDK Initialization ---
   useEffect(() => {
     const connectSDK = async () => {
       try {
@@ -1227,122 +1220,110 @@ const VideoCall = () => {
           await ConnectyCube.chat.connect({ userId: parseInt(currentUser.cb_id), password: currentUser.email });
         }
 
-        // Setup Listeners
         ConnectyCube.videochat.onCallListener = (callSession) => {
-          if (sessionRef.current) return; // Ignore if already in a call
           sessionRef.current = callSession;
         };
 
         ConnectyCube.videochat.onRemoteStreamListener = (session, userID, stream) => {
-          console.log("Remote stream received from:", userID);
-          const remoteVideo = document.getElementById("remoteVideo");
-          if (remoteVideo) {
-            session.attachMediaStream("remoteVideo", stream);
-          }
+          setRemoteStream(stream);
           setCallState("active");
         };
 
-        ConnectyCube.videochat.onAcceptCallListener = (session, userId) => {
-          console.log("Opponent joined the class");
+        ConnectyCube.videochat.onAcceptCallListener = () => {
           setCallState("active");
           startClassJoin(booking._id);
         };
 
-        ConnectyCube.videochat.onStopCallListener = () => {
-          setCallState("ended");
-        };
-      } catch (err) {
-        console.error("SDK Error", err);
-      }
+        ConnectyCube.videochat.onStopCallListener = () => setCallState("ended");
+      } catch (err) { console.error("SDK Error", err); }
     };
     connectSDK();
   }, [currentUser]);
 
-  // --- 3. Join Logic (The "Join Now" Button) ---
+  // --- 3. Remote Stream Attachment ---
+  useEffect(() => {
+    if (remoteStream && callState === "active") {
+      const remoteVideo = document.getElementById("remoteVideo");
+      if (remoteVideo) {
+        ConnectyCube.videochat.attachMediaStream("remoteVideo", remoteStream);
+      }
+    }
+  }, [remoteStream, callState]);
+
+  // --- 4. Join Logic ---
   const handleJoin = async () => {
-    if (processingSessionId.current) return;
     setCallState("connecting");
+    const opponentId = parseInt(opponentUser.cb_id);
 
     try {
+      if (localStreamRef.current) {
+        localStreamRef.current.getVideoTracks().forEach(t => t.enabled = mediaStatus.video);
+        localStreamRef.current.getAudioTracks().forEach(t => t.enabled = mediaStatus.audio);
+      }
+
       if (isTutor) {
         const session = ConnectyCube.videochat.createNewSession([opponentId], ConnectyCube.videochat.CallType.VIDEO, {});
         sessionRef.current = session;
-        processingSessionId.current = session.ID;
-
-        let stream = null;
-        if (mediaStatus.video || mediaStatus.audio) {
-          try {
-            stream = await session.getUserMedia({ video: mediaStatus.video, audio: mediaStatus.audio });
-            localStreamRef.current = stream;
-            session.attachMediaStream("localVideo", stream, { muted: true });
-          } catch (e) { console.error("Could not get tutor media", e); }
+        if (localStreamRef.current) {
+          session.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
         }
-
-        session.call({}, (error) => {
-          if (error) setError("Failed to send call signal");
-          else setCallState("active");
-        });
+        session.call({});
+        setCallState("active");
       } else {
-        // Student Side: Wait for session
         let check = 0;
         while (!sessionRef.current && check < 10) {
           await new Promise(r => setTimeout(r, 1000));
           check++;
         }
-
         if (!sessionRef.current) {
           setError("Tutor has not started the class yet.");
           setCallState("lobby");
           return;
         }
-
-        processingSessionId.current = sessionRef.current.ID;
-        let stream = null;
-        if (mediaStatus.video || mediaStatus.audio) {
-          try {
-            stream = await sessionRef.current.getUserMedia({ video: mediaStatus.video, audio: mediaStatus.audio });
-            localStreamRef.current = stream;
-            sessionRef.current.attachMediaStream("localVideo", stream, { muted: true });
-          } catch (e) { console.error("Could not get student media", e); }
+        if (localStreamRef.current) {
+          sessionRef.current.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
         }
-
         sessionRef.current.accept({});
         setCallState("active");
         startClassJoin(booking._id);
       }
-    } catch (e) {
-      setError("Join failed: " + e.message);
+    } catch (e) { setError("Join failed: " + e.message); }
+  };
+
+  // --- 5. Media Toggles ---
+  const toggleMedia = (type) => {
+    const isVideo = type === "video";
+    const tracks = isVideo ? localStreamRef.current?.getVideoTracks() : localStreamRef.current?.getAudioTracks();
+    if (tracks && tracks.length > 0) {
+      const newState = !tracks[0].enabled;
+      tracks.forEach(t => t.enabled = newState);
+      setMediaStatus(prev => ({ ...prev, [type]: newState }));
     }
   };
 
-  // --- 4. Whiteboard Sync Logic ---
+  // --- 6. Whiteboard Syncing ---
   useEffect(() => {
-    if (!isExcalidrawReady || !booking._id || !excalidrawApiRef.current) return;
+    if (!excalidrawApiRef.current || !booking?._id) return;
 
-    const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentId.toString(), (data) => {
+    const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, (data) => {
       if (!isMountedRef.current || !data || data.lastUpdatedBy === currentUser.cb_id) return;
-
       if (data.elements) {
         try {
           const remoteElements = JSON.parse(data.elements);
-          const localElements = excalidrawApiRef.current.getSceneElements();
-
-          const merged = new Map(localElements.map(el => [el.id, el]));
-          remoteElements.forEach(rel => {
-            const lel = merged.get(rel.id);
-            if (!lel || rel.version > lel.version) merged.set(rel.id, rel);
-          });
-
           isUpdatingFromRemoteRef.current = true;
-          excalidrawApiRef.current.updateScene({ elements: Array.from(merged.values()) });
-        } catch (e) { console.error("Whiteboard Sync Error", e); }
+          excalidrawApiRef.current.updateScene({ elements: remoteElements });
+        } catch (e) { console.error("Sync error", e); }
       }
     });
     firestoreUnsubscribeRef.current = unsubscribe;
-  }, [isExcalidrawReady]);
+    return () => unsubscribe?.();
+  }, [excalidrawApiRef.current, booking?._id]);
 
   const onWhiteboardChange = (elements) => {
-    if (isUpdatingFromRemoteRef.current) { isUpdatingFromRemoteRef.current = false; return; }
+    if (isUpdatingFromRemoteRef.current) {
+      isUpdatingFromRemoteRef.current = false;
+      return;
+    }
     if (!isMountedRef.current || callState !== "active") return;
 
     if (debounceHandlerRef.current) clearTimeout(debounceHandlerRef.current);
@@ -1351,36 +1332,19 @@ const VideoCall = () => {
     }, 200);
   };
 
-  const endCall = () => {
-    if (sessionRef.current) sessionRef.current.stop({});
-    if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
-    navigate(-1);
-  };
-
-  // --- RENDER SCREENS ---
-
   if (callState === "lobby") {
     return (
       <div className="lobby-screen">
         <div className="lobby-card">
           <div className="lobby-preview">
-            {hasHardware.video ? (
-              <video id="lobbyPreview" autoPlay muted playsInline />
-            ) : (
-              <div className="no-cam"><FaVideoSlash size={40} /><p>No Camera Found</p></div>
-            )}
+            {hasHardware.video ? <video id="lobbyPreview" autoPlay muted playsInline /> : <div className="no-cam"><FaVideoSlash size={40} /><p>No Camera</p></div>}
             <div className="lobby-controls">
-              <button onClick={() => setMediaStatus(p => ({ ...p, audio: !p.audio }))} className={!mediaStatus.audio ? "off" : ""}>
-                {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
-              </button>
-              <button onClick={() => setMediaStatus(p => ({ ...p, video: !p.video }))} className={!mediaStatus.video ? "off" : ""}>
-                {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
-              </button>
+              <button onClick={() => setMediaStatus(p => ({ ...p, audio: !p.audio }))} className={!mediaStatus.audio ? "off" : ""}>{mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}</button>
+              <button onClick={() => setMediaStatus(p => ({ ...p, video: !p.video }))} className={!mediaStatus.video ? "off" : ""}>{mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}</button>
             </div>
           </div>
           <div className="lobby-info">
-            <h1>{booking.subject}</h1>
-            <p>Joining as {currentUser.name}</p>
+            <h2>{booking.subject}</h2>
             <button className="join-btn" onClick={handleJoin}>Join Now</button>
           </div>
         </div>
@@ -1388,69 +1352,30 @@ const VideoCall = () => {
     );
   }
 
-  if (callState === "ended" || error) {
-    return <div className="error-screen"><h2>{error || "Call Ended"}</h2><button onClick={() => navigate(-1)}>Go Back</button></div>;
-  }
-
   return (
     <div className="call-page">
-      <div className={`main-layout ${showWhiteboard ? "whiteboard-mode" : "video-mode"}`}>
-
-        {/* VIDEO SECTION */}
-        <div className="video-grid">
-          <div className="video-tile">
+      <div className={`main-layout ${showWhiteboard ? "wb-open" : "wb-closed"}`}>
+        <div className="video-column">
+          <div className="v-tile">
             <video id="remoteVideo" autoPlay playsInline />
-            <div className="name-tag">{opponentUser.name}</div>
+            <div className="n-tag">{opponentUser.name}</div>
           </div>
-          <div className="video-tile">
-            {mediaStatus.video ? (
-              <video id="localVideo" autoPlay muted playsInline ref={(el) => {
-                if (el && localStreamRef.current) el.srcObject = localStreamRef.current;
-              }} />
-            ) : (
-              <div className="video-off-placeholder"><FaUser size={50} /></div>
-            )}
-            <div className="name-tag">You</div>
+          <div className="v-tile">
+            {mediaStatus.video ? <video id="localVideo" autoPlay muted playsInline ref={el => el && localStreamRef.current && (el.srcObject = localStreamRef.current)} /> : <div className="v-off"><FaUser size={30} /></div>}
+            <div className="n-tag">You</div>
           </div>
         </div>
-
-        {/* WHITEBOARD SECTION */}
         {showWhiteboard && (
-          <div className="whiteboard-container">
-            <Excalidraw
-              excalidrawAPI={(api) => { excalidrawApiRef.current = api; setIsExcalidrawReady(true); }}
-              onChange={onWhiteboardChange}
-              theme="light"
-            />
+          <div className="wb-container">
+            <Excalidraw excalidrawAPI={api => excalidrawApiRef.current = api} onChange={onWhiteboardChange} theme="light" />
           </div>
         )}
       </div>
-
-      {/* FOOTER CONTROLS */}
       <div className="call-footer">
-        <button onClick={() => {
-          const track = localStreamRef.current?.getAudioTracks()[0];
-          if (track) track.enabled = !track.enabled;
-          setMediaStatus(p => ({ ...p, audio: !p.audio }));
-        }} className={`ctrl-btn ${!mediaStatus.audio ? "red" : ""}`}>
-          {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
-        </button>
-
-        <button onClick={() => {
-          const track = localStreamRef.current?.getVideoTracks()[0];
-          if (track) track.enabled = !track.enabled;
-          setMediaStatus(p => ({ ...p, video: !p.video }));
-        }} className={`ctrl-btn ${!mediaStatus.video ? "red" : ""}`}>
-          {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
-        </button>
-
-        <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`ctrl-btn ${showWhiteboard ? "active" : ""}`}>
-          <FaChalkboard />
-        </button>
-
-        <button onClick={endCall} className="ctrl-btn end-call">
-          <FaPhoneSlash />
-        </button>
+        <button onClick={() => toggleMedia("audio")} className={`ctrl ${!mediaStatus.audio ? "red" : ""}`}>{mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}</button>
+        <button onClick={() => toggleMedia("video")} className={`ctrl ${!mediaStatus.video ? "red" : ""}`}>{mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}</button>
+        <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`ctrl ${showWhiteboard ? "active" : ""}`}><FaChalkboard /></button>
+        <button onClick={() => { sessionRef.current?.stop({}); navigate(-1); }} className="ctrl end"><FaPhoneSlash /></button>
       </div>
     </div>
   );
