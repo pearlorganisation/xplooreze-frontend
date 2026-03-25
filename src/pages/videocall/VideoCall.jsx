@@ -1143,21 +1143,20 @@
 // export default VideoCall;
 
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConnectyCube from "connectycube";
 import { Excalidraw } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
-import "./VideoCall.css";
 
-// --- API & Firestore ---
+// --- API & Firestore Services ---
 import { startClassJoin, updateClassJoin } from "../../data/modules/booking-module";
 import { listenToWhiteboard, updateWhiteboardElements } from "./whiteboard-services";
 
 // --- Icons ---
 import {
   FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash,
-  FaPhoneSlash, FaChalkboard, FaUser
+  FaPhoneSlash, FaChalkboard, FaUser, FaExpand, FaChalkboardTeacher
 } from "react-icons/fa";
 
 const VideoCall = () => {
@@ -1168,48 +1167,50 @@ const VideoCall = () => {
   // --- Refs ---
   const sessionRef = useRef(null);
   const localStreamRef = useRef(null);
-  const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
+  const lobbyVideoRef = useRef(null);
   const excalidrawApiRef = useRef(null);
   const isMountedRef = useRef(true);
   const isUpdatingFromRemoteRef = useRef(false);
   const debounceHandlerRef = useRef(null);
+  const joinLock = useRef(false);
 
   // --- State ---
   const [callState, setCallState] = useState("lobby");
-  const [error, setError] = useState("");
   const [mediaStatus, setMediaStatus] = useState({ video: true, audio: true });
   const [hasHardware, setHasHardware] = useState({ video: false, audio: false });
-  const [showWhiteboard, setShowWhiteboard] = useState(true);
   const [remoteStream, setRemoteStream] = useState(null);
+  const [showWhiteboard, setShowWhiteboard] = useState(true);
+  const [error, setError] = useState("");
 
   const currentUser = isTutor ? booking?.tutorId : booking?.studentId;
   const opponentUser = isTutor ? booking?.studentId : booking?.tutorId;
 
-  // --- 1. Lobby: Get Stream Immediately ---
+  // --- 1. Initial Hardware Check (Lobby) ---
   useEffect(() => {
     const initLobby = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: { width: 1280, height: 720 }
+          video: { width: 640, height: 480 }
         });
         setHasHardware({ video: true, audio: true });
         localStreamRef.current = stream;
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+        if (lobbyVideoRef.current) lobbyVideoRef.current.srcObject = stream;
       } catch (e) {
-        console.warn("Hardware not available/denied", e);
+        console.warn("Hardware not found, joining in audio-only/no-media fallback.");
         setHasHardware({ video: false, audio: false });
         setMediaStatus({ video: false, audio: false });
       }
     };
     initLobby();
     return () => {
+      isMountedRef.current = false;
       if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
     };
   }, []);
 
-  // --- 2. SDK Initialization ---
+  // --- 2. SDK signaling Setup ---
   useEffect(() => {
     const connectSDK = async () => {
       try {
@@ -1222,21 +1223,19 @@ const VideoCall = () => {
         if (!ConnectyCube.session) await ConnectyCube.createSession({ login: currentUser.email, password: currentUser.email });
         if (!ConnectyCube.chat.isConnected) await ConnectyCube.chat.connect({ userId: parseInt(currentUser.cb_id), password: currentUser.email });
 
-        // Listeners
         ConnectyCube.videochat.onCallListener = (callSession) => {
           if (!sessionRef.current) sessionRef.current = callSession;
         };
 
         ConnectyCube.videochat.onRemoteStreamListener = (session, userID, stream) => {
-          console.log("SUCCESS: Remote stream received from", userID);
+          console.log("Remote stream arrived");
           setRemoteStream(stream);
           setCallState("active");
         };
 
-        ConnectyCube.videochat.onAcceptCallListener = (session, userId) => {
-          console.log("Opponent joined");
+        ConnectyCube.videochat.onAcceptCallListener = () => {
           setCallState("active");
-          startClassJoin(booking._id);
+          startClassJoin(booking?._id);
         };
 
         ConnectyCube.videochat.onStopCallListener = () => setCallState("ended");
@@ -1245,72 +1244,56 @@ const VideoCall = () => {
     connectSDK();
   }, [currentUser]);
 
-  // --- 3. CRITICAL FIX: Remote Stream Attachment & Autoplay ---
+  // --- 3. Visibility Fix: Remote Stream Attachment ---
   useEffect(() => {
     if (remoteStream && remoteVideoRef.current) {
-      const videoEl = remoteVideoRef.current;
-      videoEl.srcObject = remoteStream;
-
-      // Force play (handles browser autoplay blocks)
-      const playPromise = videoEl.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => console.log("Autoplay prevented, user must click."));
-      }
+      remoteVideoRef.current.srcObject = remoteStream;
     }
   }, [remoteStream, callState]);
 
-  // --- 4. Join Logic (Google Meet Style) ---
+  // --- 4. The Join Function (Google Meet Logic) ---
   const handleJoin = async () => {
+    if (joinLock.current) return;
+    joinLock.current = true;
     setCallState("connecting");
-    const opponentId = parseInt(opponentUser.cb_id);
 
     try {
-      // Toggle tracks based on lobby settings
+      // Warm up tracks based on lobby settings
       if (localStreamRef.current) {
         localStreamRef.current.getVideoTracks().forEach(t => t.enabled = mediaStatus.video);
         localStreamRef.current.getAudioTracks().forEach(t => t.enabled = mediaStatus.audio);
       }
 
       if (isTutor) {
-        // Tutor initiates
-        const session = ConnectyCube.videochat.createNewSession([opponentId], ConnectyCube.videochat.CallType.VIDEO, {});
+        const session = ConnectyCube.videochat.createNewSession([parseInt(opponentUser.cb_id)], ConnectyCube.videochat.CallType.VIDEO, {});
         sessionRef.current = session;
-
-        // Use the existing lobby stream
-        if (localStreamRef.current) {
-          session.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
-        }
-
+        if (localStreamRef.current) session.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
         session.call({});
         setCallState("active");
-        startClassJoin(booking._id);
       } else {
-        // Student accepts - Wait for signal
-        let check = 0;
-        while (!sessionRef.current && check < 15) {
+        // Student Side: Wait for Tutor signal
+        let checkCount = 0;
+        while (!sessionRef.current && checkCount < 12) {
           await new Promise(r => setTimeout(r, 1000));
-          check++;
+          checkCount++;
         }
 
         if (!sessionRef.current) {
-          setError("Session not found. Tutor must start first.");
+          setError("The tutor has not started the session yet. Please refresh and try again.");
           setCallState("lobby");
+          joinLock.current = false;
           return;
         }
 
-        // Use existing lobby stream
-        if (localStreamRef.current) {
-          sessionRef.current.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
-        }
-
+        if (localStreamRef.current) sessionRef.current.attachMediaStream("localVideo", localStreamRef.current, { muted: true });
         sessionRef.current.accept({});
         setCallState("active");
-        startClassJoin(booking._id);
+        startClassJoin(booking?._id);
       }
     } catch (e) { setError("Join failed: " + e.message); }
   };
 
-  // --- 5. Media Toggle Logic ---
+  // --- 5. Middle-of-Call Toggles ---
   const toggleMedia = (type) => {
     const isVideo = type === "video";
     const tracks = isVideo ? localStreamRef.current?.getVideoTracks() : localStreamRef.current?.getAudioTracks();
@@ -1318,109 +1301,148 @@ const VideoCall = () => {
       const newState = !tracks[0].enabled;
       tracks.forEach(t => t.enabled = newState);
       setMediaStatus(prev => ({ ...prev, [type]: newState }));
-      if (sessionRef.current) {
-        newState ? sessionRef.current.unmute(type) : sessionRef.current.mute(type);
-      }
+      if (sessionRef.current) newState ? sessionRef.current.unmute(type) : sessionRef.current.mute(type);
     }
   };
 
-  // --- 6. Whiteboard Sync (Firestore) ---
+  // --- 6. Whiteboard Syncing ---
   useEffect(() => {
     if (!excalidrawApiRef.current || !booking?._id || callState !== "active") return;
-
     const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, (data) => {
       if (!isMountedRef.current || !data || data.lastUpdatedBy === currentUser.cb_id) return;
       if (data.elements) {
         try {
-          const remoteElements = JSON.parse(data.elements);
           isUpdatingFromRemoteRef.current = true;
-          excalidrawApiRef.current.updateScene({ elements: remoteElements });
+          excalidrawApiRef.current.updateScene({ elements: JSON.parse(data.elements) });
         } catch (e) { console.error("Whiteboard Sync Error", e); }
       }
     });
     return () => unsubscribe?.();
-  }, [excalidrawApiRef.current, callState]);
+  }, [callState, isTutor]);
 
   const onWhiteboardChange = (elements) => {
     if (isUpdatingFromRemoteRef.current) { isUpdatingFromRemoteRef.current = false; return; }
     if (!isMountedRef.current || callState !== "active") return;
-
     if (debounceHandlerRef.current) clearTimeout(debounceHandlerRef.current);
     debounceHandlerRef.current = setTimeout(() => {
       updateWhiteboardElements(booking._id, elements, currentUser.cb_id);
     }, 200);
   };
 
-  // --- Screens ---
+  // --- 7. Styles (Responsive CSS-in-JS) ---
+  const styles = `
+    .vc-container { height: 100vh; background: #202124; color: white; display: flex; flex-direction: column; overflow: hidden; font-family: sans-serif; }
+    .lobby-wrap { display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; }
+    .lobby-card { display: flex; flex-direction: column; background: #2d2e31; padding: 30px; border-radius: 16px; width: 100%; max-width: 900px; gap: 30px; }
+    @media (min-width: 768px) { .lobby-card { flex-direction: row; } }
+    .preview-box { position: relative; flex: 1; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
+    #lobbyPreview { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    .lobby-btns { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
+    .round-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #5f6368; background: rgba(0,0,0,0.5); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .round-btn.red { background: #ea4335; border-color: #ea4335; }
+    .join-btn { background: #1a73e8; color: white; border: none; padding: 12px 40px; border-radius: 24px; font-weight: bold; cursor: pointer; font-size: 16px; width: 100%; margin-top: 20px; }
+    .main-call { flex: 1; display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow: hidden; }
+    @media (min-width: 768px) { .main-call { flex-direction: row; } }
+    .video-side { display: flex; gap: 10px; }
+    @media (max-width: 767px) { .video-side { flex-direction: row; height: 120px; } .tile { flex: 1; } }
+    @media (min-width: 768px) { .video-side { flex-direction: column; width: 220px; } .tile { height: 150px; } }
+    .tile { position: relative; background: #3c4043; border-radius: 12px; overflow: hidden; border: 1px solid #5f6368; }
+    .tile video { width: 100%; height: 100%; object-fit: cover; }
+    .name-tag { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); padding: 2px 10px; border-radius: 4px; font-size: 11px; }
+    .wb-area { flex: 1; background: white; border-radius: 12px; overflow: hidden; }
+    .footer { height: 80px; display: flex; align-items: center; justify-content: center; gap: 20px; background: #202124; }
+    .avatar-placeholder { height: 100%; display: flex; align-items: center; justify-content: center; background: #3c4043; color: #9aa0a6; }
+    .error-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #202124; color: white; }
+  `;
+
+  // --- RENDER ---
 
   if (callState === "lobby") {
     return (
-      <div className="lobby-screen">
-        <div className="lobby-card">
-          <div className="lobby-preview">
-            <video ref={localVideoRef} autoPlay muted playsInline id="lobbyPreview" />
-            {!mediaStatus.video && <div className="avatar-placeholder"><FaUser size={60} /></div>}
-            <div className="lobby-controls">
-              <button onClick={() => setMediaStatus(p => ({ ...p, audio: !p.audio }))} className={!mediaStatus.audio ? "off" : ""}>
-                {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
-              </button>
-              <button onClick={() => setMediaStatus(p => ({ ...p, video: !p.video }))} className={!mediaStatus.video ? "off" : ""}>
-                {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
-              </button>
+      <>
+        <style>{styles}</style>
+        <div className="vc-container">
+          <div className="lobby-wrap">
+            <div className="lobby-card">
+              <div className="preview-box">
+                <video ref={lobbyVideoRef} autoPlay muted playsInline id="lobbyPreview" />
+                {!mediaStatus.video && <div className="avatar-placeholder" style={{ position: 'absolute', inset: 0 }}><FaUser size={60} /></div>}
+                <div className="lobby-controls lobby-btns">
+                  <button onClick={() => setMediaStatus(p => ({ ...p, audio: !p.audio }))} className={`round-btn ${!mediaStatus.audio ? 'red' : ''}`}>
+                    {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
+                  </button>
+                  <button onClick={() => setMediaStatus(p => ({ ...p, video: !p.video }))} className={`round-btn ${!mediaStatus.video ? 'red' : ''}`}>
+                    {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
+                  </button>
+                </div>
+              </div>
+              <div style={{ flex: '0 0 300px', textAlign: 'center' }}>
+                <h1>{booking?.subject}</h1>
+                <p>Join as {currentUser?.name}</p>
+                <button className="join-btn" onClick={handleJoin}>Join Now</button>
+              </div>
             </div>
           </div>
-          <div className="lobby-info">
-            <h2>{booking.subject}</h2>
-            <p>Ready to join the class as {currentUser.name}?</p>
-            <button className="join-now-button" onClick={handleJoin}>Join Now</button>
-          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (callState === "ended" || error) {
-    return <div className="error-screen"><h2>{error || "Class Ended"}</h2><button onClick={() => navigate(-1)}>Exit</button></div>;
+    return <div className="error-screen"><h2>{error || "Call Ended"}</h2><button className="join-btn" style={{ width: 'auto' }} onClick={() => navigate(-1)}>Exit</button></div>;
   }
 
   return (
-    <div className="call-page">
-      <div className={`main-layout ${showWhiteboard ? "wb-open" : "wb-closed"}`}>
-        <div className="video-column">
-          <div className="v-tile">
-            {/* NO MUTED PROP HERE - we want to hear them! */}
-            <video ref={remoteVideoRef} autoPlay playsInline id="remoteVideo" />
-            {!remoteStream && <div className="v-off">Connecting to {opponentUser.name}...</div>}
-            <div className="name-label">{opponentUser.name}</div>
+    <>
+      <style>{styles}</style>
+      <div className="vc-container">
+        <div className="main-call">
+          <div className="video-side">
+            <div className="tile">
+              <video ref={remoteVideoRef} autoPlay playsInline id="remoteVideo" />
+              {!remoteStream && <div className="avatar-placeholder" style={{ fontSize: '12px' }}>Waiting for opponent...</div>}
+              <div className="name-tag">{opponentUser.name}</div>
+            </div>
+            <div className="tile">
+              {mediaStatus.video ? (
+                <video autoPlay muted playsInline ref={el => el && localStreamRef.current && (el.srcObject = localStreamRef.current)} />
+              ) : <div className="avatar-placeholder"><FaUser size={30} /></div>}
+              <div className="name-tag">You</div>
+            </div>
           </div>
-          <div className="v-tile">
-            {mediaStatus.video ? (
-              <video autoPlay muted playsInline ref={el => el && localStreamRef.current && (el.srcObject = localStreamRef.current)} />
-            ) : <div className="v-off"><FaUser size={40} /></div>}
-            <div className="name-label">You</div>
+
+          <div className="wb-area">
+            {showWhiteboard ? (
+              <Excalidraw
+                excalidrawAPI={api => excalidrawApiRef.current = api}
+                onChange={onWhiteboardChange}
+                theme="light"
+              />
+            ) : (
+              <div className="avatar-placeholder" style={{ background: '#1a1b1c' }}>
+                <FaChalkboardTeacher size={100} />
+                <p>Whiteboard is hidden. Use controls to show.</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {showWhiteboard && (
-          <div className="wb-container">
-            <Excalidraw excalidrawAPI={api => excalidrawApiRef.current = api} onChange={onWhiteboardChange} theme="light" />
-          </div>
-        )}
+        <div className="footer">
+          <button onClick={() => toggleMedia("audio")} className={`round-btn ${!mediaStatus.audio ? 'red' : ''}`}>
+            {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
+          </button>
+          <button onClick={() => toggleMedia("video")} className={`round-btn ${!mediaStatus.video ? 'red' : ''}`}>
+            {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
+          </button>
+          <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`round-btn ${showWhiteboard ? 'blue' : ''}`} style={{ backgroundColor: showWhiteboard ? '#1a73e8' : '' }}>
+            <FaChalkboard />
+          </button>
+          <button onClick={() => { sessionRef.current?.stop({}); navigate(-1); }} className="round-btn red" style={{ width: '60px', borderRadius: '20px' }}>
+            <FaPhoneSlash />
+          </button>
+        </div>
       </div>
-
-      <div className="call-footer">
-        <button onClick={() => toggleMedia("audio")} className={`ctrl ${!mediaStatus.audio ? "red" : ""}`}>
-          {mediaStatus.audio ? <FaMicrophone /> : <FaMicrophoneSlash />}
-        </button>
-        <button onClick={() => toggleMedia("video")} className={`ctrl ${!mediaStatus.video ? "red" : ""}`}>
-          {mediaStatus.video ? <FaVideo /> : <FaVideoSlash />}
-        </button>
-        <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`ctrl ${showWhiteboard ? "active" : ""}`}>
-          <FaChalkboard />
-        </button>
-        <button onClick={() => { sessionRef.current?.stop({}); navigate(-1); }} className="ctrl end"><FaPhoneSlash /></button>
-      </div>
-    </div>
+    </>
   );
 };
 
