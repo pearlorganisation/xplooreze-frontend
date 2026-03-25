@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConnectyCube from "connectycube";
-import { Excalidraw } from "@excalidraw/excalidraw";
+import { Excalidraw, serializeAsJSON } from "@excalidraw/excalidraw";
 import "@excalidraw/excalidraw/index.css";
 import "./VideoCall.css";
 
 import { startClassJoin, updateClassJoin } from "../../data/modules/booking-module";
 import { listenToWhiteboard, updateWhiteboardElements } from "./whiteboard-services";
+
 import {
   FaVideo, FaMicrophone, FaMicrophoneSlash, FaVideoSlash,
-  FaPhoneSlash, FaChalkboard,
+  FaPhoneSlash, FaChalkboard, FaUserGraduate, FaChalkboardTeacher
 } from "react-icons/fa";
 
 const VideoCall = () => {
@@ -17,6 +18,7 @@ const VideoCall = () => {
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
 
+  // Refs for Media
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const localStreamRef = useRef(null);
@@ -24,180 +26,211 @@ const VideoCall = () => {
   const isMountedRef = useRef(true);
   const updateIntervalRef = useRef(null);
 
+  // UI State
   const [isMutedAudio, setIsMutedAudio] = useState(false);
   const [isMutedVideo, setIsMutedVideo] = useState(false);
   const [showLobby, setShowLobby] = useState(true);
-  const [callState, setCallState] = useState("connecting"); // connecting, ready, ringing, active
-  const [isChatConnected, setIsChatConnected] = useState(false);
+  const [callState, setCallState] = useState("connecting"); // connecting, ready, ringing, active, ended
   const [error, setError] = useState("");
+
+  // Whiteboard State
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const excalidrawApiRef = useRef(null);
+  const isInitialDataLoaded = useRef(false);
 
   if (!booking) return <div className="error-screen">No booking data provided.</div>;
 
-  const currentUser = isTutor ? booking.tutorId || {} : booking.studentId || {};
-  const opponentUser = isTutor ? booking.studentId || {} : booking.tutorId || {};
-  const userId = parseInt(currentUser.cb_id);
-  const password = currentUser.email;
+  const currentUser = isTutor ? booking.tutorId : booking.studentId;
+  const opponentUser = isTutor ? booking.studentId : booking.tutorId;
+  const userId = parseInt(currentUser?.cb_id);
+  const password = currentUser?.email; // Assuming email is used as pwd per your snippet
 
-  // --- 1. Helper: Apply Mute Settings to existing tracks ---
-  const syncMediaTracks = (stream) => {
-    if (!stream) return;
-    stream.getAudioTracks().forEach(t => t.enabled = !isMutedAudio);
-    stream.getVideoTracks().forEach(t => t.enabled = !isMutedVideo);
-  };
-
-  // --- 2. Initialize Camera for Lobby Preview ---
-  const initLobbyPreview = async () => {
-    try {
-      const stream = await ConnectyCube.videochat.getUserMedia({ audio: true, video: true });
-      localStreamRef.current = stream;
-      syncMediaTracks(stream);
-      if (localVideoRef.current) {
-        ConnectyCube.videochat.attachMediaStream(localVideoRef.current, stream, { muted: true });
-      }
-    } catch (err) {
-      console.error("Camera access failed", err);
-      setError("Please allow camera/microphone access to join the class.");
-    }
-  };
-
+  // --- SDK Initialization ---
   useEffect(() => {
     isMountedRef.current = true;
 
     const initSDK = async () => {
       try {
-        ConnectyCube.init({
+        const CREDENTIALS = {
           appId: parseInt(import.meta.env.VITE_CONNECTYCUBE_APP_ID),
           authKey: import.meta.env.VITE_CONNECTYCUBE_AUTH_KEY,
-        });
+        };
 
-        if (!ConnectyCube.session) await ConnectyCube.createSession({ login: currentUser.email, password });
+        ConnectyCube.init(CREDENTIALS);
+
+        // 1. Create Session & Connect Chat
         if (!ConnectyCube.chat.isConnected) {
+          await ConnectyCube.createSession({ login: currentUser.email, password });
           await ConnectyCube.chat.connect({ userId, password });
         }
 
-        setIsChatConnected(true);
-        setCallState(isTutor ? "ready" : "waiting");
-
-        // Start local camera preview as soon as SDK is ready
-        initLobbyPreview();
-
-        // Listen for Remote Stream
-        ConnectyCube.videochat.onRemoteStreamListener = (callSession, userID, remoteStream) => {
-          if (!isMountedRef.current) return;
+        // 2. Setup Listeners
+        ConnectyCube.videochat.onRemoteStreamListener = (session, userID, remoteStream) => {
+          if (sessionRef.current?.ID !== session.ID) return;
           if (remoteVideoRef.current) {
-            callSession.attachMediaStream(remoteVideoRef.current, remoteStream);
+            session.attachMediaStream(remoteVideoRef.current, remoteStream);
             setCallState("active");
+            // Start class tracking
             startClassJoin(booking._id);
-            updateIntervalRef.current = setInterval(() => updateClassJoin(booking._id), 60000);
+            if (!updateIntervalRef.current) {
+              updateIntervalRef.current = setInterval(() => updateClassJoin(booking._id), 60000);
+            }
           }
         };
 
-        // Listen for Incoming Call (Student side)
-        ConnectyCube.videochat.onCallListener = (callSession) => {
-          if (!isMountedRef.current) return;
-          sessionRef.current = callSession;
+        ConnectyCube.videochat.onCallListener = (session) => {
+          console.log("Incoming call...");
+          sessionRef.current = session;
           if (!isTutor) setCallState("ringing");
         };
 
         ConnectyCube.videochat.onStopCallListener = () => {
-          if (isMountedRef.current) setCallState("ended");
+          setCallState("ended");
+          cleanupAndExit();
         };
+
+        ConnectyCube.videochat.onUserNotAnswerListener = () => {
+          setError("Student did not answer.");
+          setCallState("ready");
+        };
+
+        setCallState(isTutor ? "ready" : "waiting");
+
       } catch (err) {
-        setError("Network connection failed. Check your internet.");
+        console.error("SDK Init Error", err);
+        setError("Failed to initialize video service.");
       }
     };
 
     initSDK();
+
     return () => {
       isMountedRef.current = false;
-      if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
-      if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
-      if (sessionRef.current) sessionRef.current.stop({});
+      cleanupAndExit();
     };
   }, []);
 
-  // --- Action: Tutor Starts Call ---
-  const startCall = async () => {
-    if (!isChatConnected) return;
-    try {
-      setShowLobby(false);
-      const session = ConnectyCube.videochat.createNewSession([parseInt(opponentUser.cb_id)], ConnectyCube.videochat.CallType.VIDEO);
-      sessionRef.current = session;
+  // --- Whiteboard Sync Logic ---
+  useEffect(() => {
+    if (!booking._id || !showWhiteboard) return;
 
-      // Use the stream already acquired in lobby
-      const stream = localStreamRef.current || await session.getUserMedia({ audio: true, video: true });
-      localStreamRef.current = stream;
+    // Listen for changes from the other user
+    const unsubscribe = listenToWhiteboard(booking._id, (elements) => {
+      if (excalidrawApiRef.current && elements) {
+        // Avoid infinite loop: only update if data is different
+        excalidrawApiRef.current.updateScene({ elements });
+      }
+    });
 
-      if (isMutedAudio) session.mute("audio");
-      if (isMutedVideo) session.mute("video");
+    return () => unsubscribe();
+  }, [booking._id, showWhiteboard]);
 
-      session.call({ bookingId: booking._id }, (err) => {
-        if (err) setCallState("ended");
-        else setCallState("ringing");
-      });
-    } catch (err) { setError("Failed to start call."); }
+  const onWhiteboardChange = (elements, appState) => {
+    if (elements.length > 0) {
+      // Logic to prevent lag: only sync on pointer up or specific intervals
+      updateWhiteboardElements(booking._id, elements);
+    }
   };
 
-  // --- Action: Student Joins Call ---
+  // --- Call Actions ---
+  const applyMediaSettings = (session, stream) => {
+    stream.getAudioTracks().forEach(t => t.enabled = !isMutedAudio);
+    stream.getVideoTracks().forEach(t => t.enabled = !isMutedVideo);
+    if (isMutedAudio) session.mute("audio");
+    if (isMutedVideo) session.mute("video");
+  };
+
+  const startCall = async () => {
+    try {
+      setCallState("connecting");
+      const calleesIds = [parseInt(opponentUser.cb_id)];
+      const session = ConnectyCube.videochat.createNewSession(calleesIds, ConnectyCube.videochat.CallType.VIDEO);
+      sessionRef.current = session;
+
+      const stream = await session.getUserMedia({ audio: true, video: true });
+      localStreamRef.current = stream;
+
+      applyMediaSettings(session, stream);
+      session.attachMediaStream(localVideoRef.current, stream, { muted: true });
+
+      session.call({ bookingId: booking._id });
+      setShowLobby(false);
+      setCallState("ringing");
+    } catch (err) {
+      setError("Camera/Mic access denied.");
+    }
+  };
+
   const joinCall = async () => {
     if (!sessionRef.current) return;
     try {
-      setShowLobby(false);
-      const session = sessionRef.current;
-      const stream = localStreamRef.current || await session.getUserMedia({ audio: true, video: true });
+      const stream = await sessionRef.current.getUserMedia({ audio: true, video: true });
       localStreamRef.current = stream;
 
-      if (isMutedAudio) session.mute("audio");
-      if (isMutedVideo) session.mute("video");
+      applyMediaSettings(sessionRef.current, stream);
+      sessionRef.current.attachMediaStream(localVideoRef.current, stream, { muted: true });
 
-      session.accept({});
+      sessionRef.current.accept({});
+      setShowLobby(false);
       setCallState("active");
-    } catch (err) { setError("Could not join call."); }
+    } catch (err) {
+      setError("Failed to join call.");
+    }
   };
 
   const toggleMuteAudio = () => {
-    const newState = !isMutedAudio;
-    setIsMutedAudio(newState);
-    if (localStreamRef.current) localStreamRef.current.getAudioTracks().forEach(t => t.enabled = !newState);
-    if (sessionRef.current) newState ? sessionRef.current.mute("audio") : sessionRef.current.unmute("audio");
+    const next = !isMutedAudio;
+    setIsMutedAudio(next);
+    if (localStreamRef.current) localStreamRef.current.getAudioTracks()[0].enabled = !next;
+    if (sessionRef.current) next ? sessionRef.current.mute("audio") : sessionRef.current.unmute("audio");
   };
 
   const toggleMuteVideo = () => {
-    const newState = !isMutedVideo;
-    setIsMutedVideo(newState);
-    if (localStreamRef.current) localStreamRef.current.getVideoTracks().forEach(t => t.enabled = !newState);
-    if (sessionRef.current) newState ? sessionRef.current.mute("video") : sessionRef.current.unmute("video");
+    const next = !isMutedVideo;
+    setIsMutedVideo(next);
+    if (localStreamRef.current) localStreamRef.current.getVideoTracks()[0].enabled = !next;
+    if (sessionRef.current) next ? sessionRef.current.mute("video") : sessionRef.current.unmute("video");
   };
 
-  if (error) return <div className="error-screen"><h2>{error}</h2><button onClick={() => window.location.reload()}>Retry</button></div>;
+  const cleanupAndExit = () => {
+    if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(t => t.stop());
+    }
+    if (sessionRef.current) sessionRef.current.stop({});
+    navigate("/dashboard");
+  };
 
   return (
     <div className="video-call-page">
       {showLobby && (
         <div className="lobby-overlay">
           <div className="lobby-card">
-            <h2>Ready to Join?</h2>
-            {/* Lobby Camera Preview */}
-            <div className="lobby-preview-box">
-              <video ref={localVideoRef} autoPlay muted playsInline />
+            <div className="user-info">
+              {isTutor ? <FaChalkboardTeacher size={40} /> : <FaUserGraduate size={40} />}
+              <h2>{isTutor ? "Start Your Session" : "Join Your Session"}</h2>
+              <p>{booking.subject} with {opponentUser.full_name}</p>
             </div>
 
             <div className="lobby-preview-controls">
-              <button onClick={toggleMuteAudio} className="control-btn">
+              <button onClick={() => setIsMutedAudio(!isMutedAudio)} className="control-btn">
                 {isMutedAudio ? <FaMicrophoneSlash className="red-icon" /> : <FaMicrophone />}
               </button>
-              <button onClick={toggleMuteVideo} className="control-btn">
+              <button onClick={() => setIsMutedVideo(!isMutedVideo)} className="control-btn">
                 {isMutedVideo ? <FaVideoSlash className="red-icon" /> : <FaVideo />}
               </button>
             </div>
 
             {isTutor ? (
-              <button className="join-btn" onClick={startCall} disabled={!isChatConnected}>
-                {isChatConnected ? "Start Class" : "Connecting..."}
+              <button className="join-btn" onClick={startCall} disabled={callState === "connecting"}>
+                {callState === "connecting" ? "Initializing..." : "Start Class"}
               </button>
             ) : (
-              <button className="join-btn" onClick={joinCall} disabled={callState !== "ringing"}>
+              <button
+                className={`join-btn ${callState === "ringing" ? "pulse" : ""}`}
+                onClick={joinCall}
+                disabled={callState !== "ringing"}
+              >
                 {callState === "ringing" ? "Join Class Now" : "Waiting for Tutor..."}
               </button>
             )}
@@ -205,33 +238,57 @@ const VideoCall = () => {
         </div>
       )}
 
-      <div className="video-container">
-        {/* Tutor's Large Screen */}
-        <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
-        {/* My Small Screen */}
-        {!showLobby && <video ref={localVideoRef} autoPlay muted playsInline className="local-video" />}
+      <div className="main-layout">
+        <div className={`video-grid ${showWhiteboard ? "whiteboard-active" : ""}`}>
+          <div className="video-wrapper remote">
+            <video ref={remoteVideoRef} autoPlay playsInline />
+            {callState !== "active" && !showLobby && (
+              <div className="video-placeholder">Connecting to {opponentUser.full_name}...</div>
+            )}
+          </div>
 
-        {callState === "ringing" && isTutor && <div className="calling-loader">Calling student...</div>}
+          <div className="video-wrapper local">
+            <video ref={localVideoRef} autoPlay muted playsInline />
+          </div>
+        </div>
+
+        {showWhiteboard && (
+          <div className="whiteboard-wrapper">
+            <Excalidraw
+              excalidrawAPI={(api) => (excalidrawApiRef.current = api)}
+              onChange={onWhiteboardChange}
+              theme="light"
+            />
+          </div>
+        )}
       </div>
 
       {!showLobby && (
-        <div className="controls">
-          <button onClick={toggleMuteAudio} className="control-btn">
-            {isMutedAudio ? <FaMicrophoneSlash /> : <FaMicrophone />}
-          </button>
-          <button onClick={toggleMuteVideo} className="control-btn">
-            {isMutedVideo ? <FaVideoSlash /> : <FaVideo />}
-          </button>
-          <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`control-btn ${showWhiteboard ? 'active' : ''}`}>
-            <FaChalkboard />
-          </button>
-          <button onClick={() => navigate(-1)} className="control-btn end-btn"><FaPhoneSlash /></button>
+        <div className="call-controls-bar">
+          <div className="session-details">
+            <span className="dot active"></span>
+            {booking.subject}
+          </div>
+
+          <div className="center-controls">
+            <button onClick={toggleMuteAudio} className={`icon-btn ${isMutedAudio ? "off" : ""}`}>
+              {isMutedAudio ? <FaMicrophoneSlash /> : <FaMicrophone />}
+            </button>
+            <button onClick={toggleMuteVideo} className={`icon-btn ${isMutedVideo ? "off" : ""}`}>
+              {isMutedVideo ? <FaVideoSlash /> : <FaVideo />}
+            </button>
+            <button
+              onClick={() => setShowWhiteboard(!showWhiteboard)}
+              className={`icon-btn ${showWhiteboard ? "active" : ""}`}
+            >
+              <FaChalkboard />
+            </button>
+            <button onClick={cleanupAndExit} className="icon-btn end-call">
+              <FaPhoneSlash />
+            </button>
+          </div>
         </div>
       )}
-
-      <div className={`whiteboard-container ${showWhiteboard ? "visible" : ""}`}>
-        <Excalidraw theme="light" />
-      </div>
     </div>
   );
 };
