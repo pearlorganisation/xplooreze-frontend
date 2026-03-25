@@ -1151,101 +1151,48 @@ import "@excalidraw/excalidraw/index.css";
 import "./VideoCall.css";
 
 // --- Import class tracking API functions ---
-import {
-  startClassJoin,
-  updateClassJoin,
-} from "../../data/modules/booking-module";
+import { startClassJoin, updateClassJoin } from "../../data/modules/booking-module";
 
 // --- Import Firestore services ---
-import {
-  listenToWhiteboard,
-  updateWhiteboardElements,
-  addWhiteboardFile,
-} from "./whiteboard-services";
+import { listenToWhiteboard, updateWhiteboardElements, addWhiteboardFile } from "./whiteboard-services";
 
 // Icons
-import {
-  FaVideo,
-  FaMicrophone,
-  FaMicrophoneSlash,
-  FaVideoSlash,
-  FaPhoneSlash,
-  FaExpand,
-  FaCompress,
-  FaChalkboard,
-} from "react-icons/fa";
-
-const getBookingDurationInMs = (booking) => {
-  try {
-    const [startHour, startMin] = booking.startTime.split(":").map(Number);
-    const [endHour, endMin] = booking.endTime.split(":").map(Number);
-    const totalStartMinutes = startHour * 60 + startMin;
-    const totalEndMinutes = endHour * 60 + endMin;
-    const durationInMinutes = totalEndMinutes - totalStartMinutes;
-    if (durationInMinutes <= 0) return null;
-    return durationInMinutes * 60 * 1000;
-  } catch (e) {
-    console.error("Error calculating duration:", e);
-    return null;
-  }
-};
+import { FaVideo, FaPhoneSlash, FaExpand, FaCompress, FaChalkboard } from "react-icons/fa";
 
 const VideoCall = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
 
-  const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const videoContainerRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const remoteStreamRef = useRef(null);
   const sessionRef = useRef(null);
   const isMountedRef = useRef(true);
+  const isProcessingRef = useRef(false);
 
   const updateIntervalRef = useRef(null);
-  const bookingEndTimerRef = useRef(null);
-
-  const [isMutedAudio, setIsMutedAudio] = useState(true);
-  const [isMutedVideo, setIsMutedVideo] = useState(true);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isSwapped, setIsSwapped] = useState(false);
   const [callState, setCallState] = useState("connecting");
   const [error, setError] = useState("");
-
-  // Whiteboard States
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const excalidrawApiRef = useRef(null);
-  const lastSentElementsRef = useRef(null);
+  const [isExcalidrawReady, setIsExcalidrawReady] = useState(false);
   const isUpdatingFromRemoteRef = useRef(false);
   const debounceHandlerRef = useRef(null);
-  const sentFilesRef = useRef(new Set());
-  const [isExcalidrawReady, setIsExcalidrawReady] = useState(false);
   const firestoreUnsubscribeRef = useRef(null);
 
   if (!booking) return <div className="error-screen">No booking data.</div>;
 
-  const currentUser = isTutor ? booking.tutorId || {} : booking.studentId || {};
-  const opponentUser = isTutor ? booking.studentId || {} : booking.tutorId || {};
-  const userId = parseInt(currentUser.cb_id);
-  const opponentId = parseInt(opponentUser.cb_id);
-  const login = currentUser.email;
-  const password = currentUser.email;
+  const currentUser = isTutor ? booking.tutorId : booking.studentId;
+  const opponentId = parseInt(isTutor ? booking.studentId.cb_id : booking.tutorId.cb_id);
 
-  const stopStream = (stream) => {
-    if (stream) stream.getTracks().forEach((track) => track.stop());
-  };
-
-  const clearAllTimers = () => {
-    if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
-    if (bookingEndTimerRef.current) clearTimeout(bookingEndTimerRef.current);
-  };
-
-  // --- Main Logic ---
   useEffect(() => {
     isMountedRef.current = true;
 
     const initSDK = async () => {
+      if (isProcessingRef.current) return;
+      isProcessingRef.current = true;
+
       try {
         const CREDENTIALS = {
           appId: parseInt(import.meta.env.VITE_CONNECTYCUBE_APP_ID || "0"),
@@ -1253,25 +1200,28 @@ const VideoCall = () => {
         };
         ConnectyCube.init(CREDENTIALS);
 
-        // 1. Session and Chat Connection
         if (!ConnectyCube.session) {
-          await ConnectyCube.createSession({ login, password });
+          await ConnectyCube.createSession({ login: currentUser.email, password: currentUser.email });
         }
 
         if (!ConnectyCube.chat.isConnected) {
-          await ConnectyCube.chat.connect({ userId, password });
-          // Poll to ensure connection is 100% stable before proceeding
-          let checkInterval = 0;
-          while (!ConnectyCube.chat.isConnected && checkInterval < 50) {
+          await ConnectyCube.chat.connect({ userId: parseInt(currentUser.cb_id), password: currentUser.email });
+          let attempts = 0;
+          while (!ConnectyCube.chat.isConnected && attempts < 50) {
             await new Promise((r) => setTimeout(r, 200));
-            checkInterval++;
+            attempts++;
           }
         }
 
-        // 2. Listeners
+        // 1. Remote Stream Listener (In case someone DOES turn on camera later)
         ConnectyCube.videochat.onRemoteStreamListener = (session, userID, stream) => {
-          remoteStreamRef.current = stream;
-          session.attachMediaStream("remoteVideo", stream);
+          if (remoteVideoRef.current) session.attachMediaStream("remoteVideo", stream);
+          if (isMountedRef.current) setCallState("active");
+        };
+
+        // 2. Accept Listener (For Tutor: When student joins)
+        ConnectyCube.videochat.onAcceptCallListener = (session, userId, extension) => {
+          console.log("Student accepted the call.");
           if (isMountedRef.current) {
             setCallState("active");
             startClassJoin(booking._id);
@@ -1279,41 +1229,41 @@ const VideoCall = () => {
           }
         };
 
-        ConnectyCube.videochat.onCallListener = async (callSession, extension) => {
+        // 3. Incoming Call Listener (For Student: When tutor calls)
+        ConnectyCube.videochat.onCallListener = (callSession) => {
           sessionRef.current = callSession;
           if (isMountedRef.current) setCallState("connecting");
 
-          // FIXED: Join without camera/mic permissions
-          try {
-            const mediaParams = { audio: false, video: false };
-            // Small delay to ensure signaling state is ready
-            setTimeout(() => {
-              if (ConnectyCube.chat.isConnected) {
-                callSession.accept(mediaParams);
-                console.log("Call accepted without media.");
-              }
-            }, 500);
-          } catch (err) {
-            console.error("Accept error:", err);
-          }
+          setTimeout(() => {
+            if (ConnectyCube.chat.isConnected && isMountedRef.current) {
+              const mediaParams = { audio: false, video: false }; // NO CAMERA/MIC
+              callSession.accept(mediaParams);
+              setCallState("active"); // Trigger UI immediately since no stream will arrive
+              startClassJoin(booking._id);
+              updateIntervalRef.current = setInterval(() => updateClassJoin(booking._id), 60000);
+            }
+          }, 1000);
         };
 
         ConnectyCube.videochat.onStopCallListener = () => {
           if (isMountedRef.current) setCallState("ended");
         };
 
-        // 3. Start process
+        // 4. Start Call Logic (Tutor)
         if (isTutor) {
-          startCall();
+          const sessionType = ConnectyCube.videochat.CallType.VIDEO;
+          const newSession = ConnectyCube.videochat.createNewSession([opponentId], sessionType, {});
+          sessionRef.current = newSession;
+          newSession.call({ bookingId: booking._id }, (err) => {
+            if (err) setError("Call failed");
+            else setCallState("ringing");
+          });
         } else {
-          if (isMountedRef.current) setCallState("waiting");
+          setCallState("waiting");
         }
 
       } catch (err) {
-        if (isMountedRef.current) {
-          setError("Connection failed: " + err.message);
-          setCallState("ended");
-        }
+        setError("Connection failed. Please refresh.");
       }
     };
 
@@ -1321,49 +1271,22 @@ const VideoCall = () => {
 
     return () => {
       isMountedRef.current = false;
-      clearAllTimers();
-      stopStream(localStreamRef.current);
-      stopStream(remoteStreamRef.current);
+      if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
       if (sessionRef.current) sessionRef.current.stop({});
       if (ConnectyCube.chat.isConnected) ConnectyCube.chat.disconnect();
       if (firestoreUnsubscribeRef.current) firestoreUnsubscribeRef.current();
     };
   }, [isTutor, booking._id]);
 
-  const startCall = async () => {
-    if (!ConnectyCube.chat.isConnected) {
-      setError("Chat not connected. Please refresh.");
-      return;
-    }
-
-    setCallState("connecting");
-    const calleesIds = [opponentId];
-    const sessionType = ConnectyCube.videochat.CallType.VIDEO;
-    const newSession = ConnectyCube.videochat.createNewSession(calleesIds, sessionType, {});
-    sessionRef.current = newSession;
-
-    // FIXED: Call without requesting local media
-    const extension = { bookingId: booking._id };
-    newSession.call(extension, (error) => {
-      if (error) {
-        setError("Failed to initiate call.");
-        setCallState("ended");
-      } else {
-        setCallState("ringing");
-      }
-    });
-  };
-
-  // --- Whiteboard & UI Handlers (Unchanged logic, fixed for stability) ---
+  // Whiteboard Logic
   useEffect(() => {
     if (!isExcalidrawReady || !booking._id || !excalidrawApiRef.current) return;
-    const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, (data) => {
+    const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentId.toString(), (data) => {
       if (!isMountedRef.current || !data || data.lastUpdatedBy === currentUser.cb_id) return;
       isUpdatingFromRemoteRef.current = true;
       if (data.elements) {
         try {
-          const incoming = JSON.parse(data.elements);
-          excalidrawApiRef.current.updateScene({ elements: incoming });
+          excalidrawApiRef.current.updateScene({ elements: JSON.parse(data.elements) });
         } catch (e) { console.error(e); }
       }
     });
@@ -1376,46 +1299,16 @@ const VideoCall = () => {
     navigate(-1);
   };
 
-  const swapVideos = () => setIsSwapped(!isSwapped);
-
-  if (callState === "waiting") {
-    return (
-      <div className="waiting-screen">
-        <h2>Waiting for tutor to start...</h2>
-        <button onClick={() => navigate(-1)} className="back-btn">Back</button>
-      </div>
-    );
-  }
-
-  if (callState === "ended" || error) {
-    return (
-      <div className="error-screen">
-        <h2>{error || "Call Ended"}</h2>
-        <button onClick={() => navigate(-1)} className="back-btn">Go Back</button>
-      </div>
-    );
-  }
+  if (callState === "waiting") return <div className="waiting-screen"><h2>Waiting for tutor...</h2><button onClick={() => navigate(-1)}>Back</button></div>;
+  if (callState === "ended" || error) return <div className="error-screen"><h2>{error || "Call Ended"}</h2><button onClick={() => navigate(-1)}>Go Back</button></div>;
 
   return (
     <div className="video-call-page">
       <div className="video-container" ref={videoContainerRef}>
-        <video
-          ref={remoteVideoRef}
-          id="remoteVideo"
-          autoPlay
-          playsInline
-          className={`remote-video ${isSwapped ? "small-video" : "big-video"}`}
-          onClick={swapVideos}
-        />
-        <video
-          ref={localVideoRef}
-          id="localVideo"
-          autoPlay
-          muted
-          playsInline
-          className={`local-video ${isSwapped ? "big-video" : "small-video"}`}
-          onClick={swapVideos}
-        />
+        <div className="no-video-placeholder">
+          {callState === "active" ? "Connection Active (Whiteboard Only)" : "Connecting..."}
+        </div>
+        <video ref={remoteVideoRef} id="remoteVideo" autoPlay playsInline className="big-video" />
       </div>
 
       <div className={`whiteboard-container ${showWhiteboard ? "visible" : ""}`}>
@@ -1441,6 +1334,7 @@ const VideoCall = () => {
         <div className="controls">
           <button onClick={() => setShowWhiteboard(!showWhiteboard)} className="control-btn"><FaChalkboard /></button>
           <button onClick={endCall} className="control-btn end-btn"><FaPhoneSlash /></button>
+          <button onClick={() => videoContainerRef.current?.requestFullscreen()} className="control-btn"><FaExpand /></button>
         </div>
       )}
     </div>
