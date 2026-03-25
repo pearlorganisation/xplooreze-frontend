@@ -67,12 +67,13 @@ const VideoCall = () => {
   const bookingEndTimerRef = useRef(null);
 
   // --- State for UI rendering ---
-  const [isMutedAudio, setIsMutedAudio] = useState(false);
-  const [isMutedVideo, setIsMutedVideo] = useState(false);
+  const [isMutedAudio, setIsMutedAudio] = useState(true);
+  const [isMutedVideo, setIsMutedVideo] = useState(true);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isSwapped, setIsSwapped] = useState(false);
   const [callState, setCallState] = useState("connecting");
   const [error, setError] = useState("");
+  
 
   // --- Ref for echo prevention ---
   const isUpdatingFromRemoteRef = useRef(false);
@@ -298,6 +299,10 @@ const VideoCall = () => {
                 stopLocalStream(localStream);
                 return;
               }
+              // --- ADD THESE LINES ---
+              callSession.mute("audio");
+              callSession.mute("video");
+              // -----------------------
               localStreamRef.current = localStream;
               try {
                 callSession.attachMediaStream("localVideo", localStream, {
@@ -575,6 +580,10 @@ const VideoCall = () => {
         stopLocalStream(localStream);
         return;
       }
+      // --- ADD THESE LINES ---
+      newSession.mute("audio");
+      newSession.mute("video");
+      // -----------------------
       localStreamRef.current = localStream;
       try {
         newSession.attachMediaStream("localVideo", localStream, {
