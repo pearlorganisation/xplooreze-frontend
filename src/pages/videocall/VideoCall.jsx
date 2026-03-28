@@ -28,7 +28,11 @@ import {
   FaExpand,
   FaCompress,
   FaChalkboard,
+  FaLock,
+  FaSyncAlt,
+  FaExclamationCircle,
 } from "react-icons/fa";
+import { createPortal } from "react-dom";
 
 /**
  * Helper function to calculate the duration of the booking in milliseconds.
@@ -52,6 +56,100 @@ const VideoCall = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
+  const [showPermissionGuide, setShowPermissionGuide] = useState(false);
+
+  const PermissionGuideModal = () => {
+    if (!showPermissionGuide) return null;
+
+    return createPortal(
+      <div className="permission-modal-overlay">
+        <div className="permission-modal-content">
+          <button
+            className="close-x"
+            onClick={() => setShowPermissionGuide(false)}
+          >
+            &times;
+          </button>
+
+          <div className="modal-left">
+            <div className="modal-header">
+              <div className="icon-badge">
+                <FaLock />
+              </div>
+              <div>
+                <h2>Camera & Mic Access</h2>
+                <p>We need your permission to start the class.</p>
+              </div>
+            </div>
+
+            <div className="guide-steps">
+              <div className="step-item">
+                <div className="step-number">01</div>
+                <div className="step-text">
+                  <strong>Click the Lock</strong>
+                  <p>
+                    Click the lock icon located in your browser's address bar.
+                  </p>
+                </div>
+              </div>
+
+              <div className="step-item">
+                <div className="step-number">02</div>
+                <div className="step-text">
+                  <strong>Allow Hardware</strong>
+                  <p>
+                    Switch the toggles for <b>Camera</b> and <b>Microphone</b>{" "}
+                    to "On".
+                  </p>
+                </div>
+              </div>
+
+              <div className="step-item">
+                <div className="step-number">03</div>
+                <div className="step-text">
+                  <strong>Reload Page</strong>
+                  <p>Refresh the page to apply changes and join the call.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                className="reload-btn"
+                onClick={() => window.location.reload()}
+              >
+                <FaSyncAlt /> Reload Class
+              </button>
+            </div>
+          </div>
+
+          <div className="modal-right">
+            {/* Visual Illustration of the browser settings */}
+            <div className="browser-mockup">
+              <div className="mock-address-bar">
+                <div className="mock-lock active-ping">
+                  <FaLock />
+                </div>
+                <div className="mock-url">your-platform.com</div>
+              </div>
+              <div className="mock-dropdown">
+                <div className="mock-row">
+                  <span>Camera</span>
+                  <div className="mock-toggle active"></div>
+                </div>
+                <div className="mock-row">
+                  <span>Microphone</span>
+                  <div className="mock-toggle active"></div>
+                </div>
+              </div>
+              {/* <div className="mock-cursor"></div> */}
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    );
+  };
 
   // --- Refs for all critical objects ---
   const localVideoRef = useRef(null);
@@ -73,7 +171,6 @@ const VideoCall = () => {
   const [isSwapped, setIsSwapped] = useState(false);
   const [callState, setCallState] = useState("connecting");
   const [error, setError] = useState("");
-  
 
   // --- Ref for echo prevention ---
   const isUpdatingFromRemoteRef = useRef(false);
@@ -537,6 +634,12 @@ const VideoCall = () => {
       return true;
     } catch (err) {
       console.error("Permission denied:", err);
+      if (
+        err.name === "NotAllowedError" ||
+        err.name === "PermissionDeniedError"
+      ) {
+        setShowPermissionGuide(true);
+      }
       return false;
     }
   };
@@ -546,9 +649,14 @@ const VideoCall = () => {
     try {
       const hasPermissions = await requestMediaPermissions();
       if (!hasPermissions) {
-        throw new Error(
+        setError(
           "Media permissions denied. Please allow camera and microphone access.",
         );
+        setCallState("ended");
+        return;
+        // throw new Error(
+        //   "Media permissions denied. Please allow camera and microphone access.",
+        // );
       }
       if (!isMountedRef.current) return;
       if (!ConnectyCube.chat.isConnected) {
@@ -774,8 +882,8 @@ const VideoCall = () => {
     // This logic just checks if a send is needed
     const oldIds = lastSentElementsRef.current
       ? new Set(
-        lastSentElementsRef.current.map((el) => `${el.id}-${el.version}`),
-      )
+          lastSentElementsRef.current.map((el) => `${el.id}-${el.version}`),
+        )
       : new Set();
     const newIds = new Set(elements.map((el) => `${el.id}-${el.version}`));
 
@@ -837,9 +945,19 @@ const VideoCall = () => {
     return (
       <div className="error-screen">
         <h2>{error || "Call Ended"}</h2>
+        <PermissionGuideModal />
         <button onClick={() => navigate(-1)} className="back-btn">
           Go Back
         </button>
+        {!showPermissionGuide && (
+          <button
+            onClick={() => setShowPermissionGuide(true)}
+            className="back-btn"
+            style={{ marginLeft: "10px", background: "#444" }}
+          >
+            View Permission Guide
+          </button>
+        )}
       </div>
     );
   }
@@ -871,6 +989,7 @@ const VideoCall = () => {
           onClick={callState === "active" ? swapVideos : undefined}
         />
       </div>
+      <PermissionGuideModal />
 
       <div
         className={`whiteboard-container ${showWhiteboard ? "visible" : ""}`}
@@ -938,10 +1057,6 @@ const VideoCall = () => {
 };
 
 export default VideoCall;
-
-
-
-
 
 // import React, { useState, useEffect, useRef } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
