@@ -940,7 +940,6 @@
 // export default VideoCall;
 
 
-
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ConnectyCube from "connectycube";
@@ -957,7 +956,6 @@ const VideoCall = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
-  const [showPermissionGuide, setShowPermissionGuide] = useState(false);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -970,16 +968,11 @@ const VideoCall = () => {
 
   const [isMutedAudio, setIsMutedAudio] = useState(true);
   const [isMutedVideo, setIsMutedVideo] = useState(true);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isSwapped, setIsSwapped] = useState(false);
   const [callState, setCallState] = useState("connecting");
   const [error, setError] = useState("");
-
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [isExcalidrawReady, setIsExcalidrawReady] = useState(false);
   const excalidrawApiRef = useRef(null);
-  const firestoreUnsubscribeRef = useRef(null);
-  const debounceHandlerRef = useRef(null);
   const isUpdatingFromRemoteRef = useRef(false);
 
   const currentUser = isTutor ? booking.tutorId || {} : booking.studentId || {};
@@ -988,6 +981,7 @@ const VideoCall = () => {
 
   useEffect(() => {
     isMountedRef.current = true;
+
     const initSDK = async () => {
       try {
         const CREDENTIALS = {
@@ -995,6 +989,7 @@ const VideoCall = () => {
           authKey: import.meta.env.VITE_CONNECTYCUBE_AUTH_KEY || "",
         };
         ConnectyCube.init(CREDENTIALS);
+
         if (!ConnectyCube.session) {
           await ConnectyCube.createSession({ login: currentUser.email, password: currentUser.email });
         }
@@ -1002,9 +997,11 @@ const VideoCall = () => {
           await ConnectyCube.chat.connect({ userId: parseInt(currentUser.cb_id), password: currentUser.email });
         }
 
+        // Listener for when the OTHER person starts their camera
         ConnectyCube.videochat.onRemoteStreamListener = (session, userID, stream) => {
-          console.log("Remote stream received from:", userID);
+          console.log("Remote stream received!");
           remoteStreamRef.current = stream;
+          // ConnectyCube helper to attach stream to <video id="remoteVideo">
           session.attachMediaStream("remoteVideo", stream);
           if (isMountedRef.current) setCallState("active");
         };
@@ -1012,13 +1009,15 @@ const VideoCall = () => {
         ConnectyCube.videochat.onCallListener = (callSession) => {
           sessionRef.current = callSession;
           if (!isTutor) {
+            // Student joins immediately (no prompt)
             callSession.accept({});
-            if (isMountedRef.current) setCallState("active");
+            setCallState("active");
             startTracking();
           }
         };
 
         if (isTutor) {
+          // Tutor initiates call with VIDEO type so the peer connection supports video later
           const newSession = ConnectyCube.videochat.createNewSession([opponentId], ConnectyCube.videochat.CallType.VIDEO, {});
           sessionRef.current = newSession;
           newSession.call({});
@@ -1031,12 +1030,12 @@ const VideoCall = () => {
         setError("Connection failed: " + err.message);
       }
     };
+
     initSDK();
     return () => {
       isMountedRef.current = false;
       if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
       if (sessionRef.current) sessionRef.current.stop({});
-      if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
     };
   }, []);
 
@@ -1046,140 +1045,136 @@ const VideoCall = () => {
   };
 
   /**
-   * UPDATED: handleMediaToggle
-   * Now manually adds tracks to the peer connection so the other side sees/hears you.
+   * FIX: This function now properly adds tracks and triggers signaling
    */
   const handleMediaToggle = async (type) => {
     if (!sessionRef.current) return;
 
     try {
-      // 1. Get hardware access if we haven't yet
+      // 1. If we don't have a local stream, get it now (Browser Permission Prompt happens HERE)
       if (!localStreamRef.current) {
-        const stream = await sessionRef.current.getUserMedia({
+        console.log("Requesting hardware permissions...");
+        const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
           video: { width: 640, height: 480 }
         });
+
         localStreamRef.current = stream;
 
-        // Attach locally
-        sessionRef.current.attachMediaStream("localVideo", stream, { muted: true });
+        // Attach to the local <video> element
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
 
-        // IMPORTANT: Inject tracks into the existing PeerConnection for the other user
+        // 2. CRITICAL: Add these tracks to the existing Peer Connection
         const pc = sessionRef.current.peerConnections[opponentId];
         if (pc) {
           stream.getTracks().forEach(track => {
             pc.addTrack(track, stream);
           });
-          // This forces a renegotiation so the remote side detects the new tracks
+
+          // 3. Force ConnectyCube to send an 'update' signal to the other person
+          // This tells the opponent to look for new tracks
+          sessionRef.current.update({});
         }
       }
 
-      // 2. Handle Mute/Unmute logic
+      // 4. Update internal mute states
       if (type === "audio") {
-        const newState = !isMutedAudio;
-        if (newState) sessionRef.current.mute("audio");
-        else sessionRef.current.unmute("audio");
-        setIsMutedAudio(newState);
+        const nextMute = !isMutedAudio;
+        localStreamRef.current.getAudioTracks().forEach(t => t.enabled = !nextMute);
+        setIsMutedAudio(nextMute);
       } else if (type === "video") {
-        const newState = !isMutedVideo;
-        if (newState) sessionRef.current.mute("video");
-        else sessionRef.current.unmute("video");
-        setIsMutedVideo(newState);
+        const nextMute = !isMutedVideo;
+        localStreamRef.current.getVideoTracks().forEach(t => t.enabled = !nextMute);
+        setIsMutedVideo(nextMute);
       }
 
     } catch (err) {
-      console.error("Hardware error:", err);
-      if (err.name === "NotAllowedError") setShowPermissionGuide(true);
-      else alert("Could not access camera/microphone.");
+      console.error("Camera/Mic access denied:", err);
+      alert("Permission denied. Please allow camera access in browser settings.");
     }
   };
 
-  const swapVideos = () => setIsSwapped(!isSwapped);
-  const endCall = () => { if (sessionRef.current) sessionRef.current.stop({}); navigate(-1); };
-
-  // Permission Guide Modal
-  const PermissionGuideModal = () => {
-    if (!showPermissionGuide) return null;
-    return createPortal(
-      <div className="permission-modal-overlay">
-        <div className="permission-modal-content">
-          <button className="close-x" onClick={() => setShowPermissionGuide(false)}>&times;</button>
-          <h2>Permissions Required</h2>
-          <p>Please click the lock icon in your address bar and allow Camera and Microphone access, then reload.</p>
-          <button className="reload-btn" onClick={() => window.location.reload()}>Reload Page</button>
-        </div>
-      </div>,
-      document.body
-    );
+  const endCall = () => {
+    if (sessionRef.current) sessionRef.current.stop({});
+    navigate(-1);
   };
 
-  // Whiteboard Logic
+  // Whiteboard logic (Simplified for clarity)
   useEffect(() => {
     if (!isExcalidrawReady || !booking._id || !excalidrawApiRef.current) return;
     const handleRemoteUpdate = (data) => {
       if (!isMountedRef.current || !data || data.lastUpdatedBy === currentUser.cb_id) return;
       isUpdatingFromRemoteRef.current = true;
       if (data.elements) excalidrawApiRef.current.updateScene({ elements: JSON.parse(data.elements) });
-      if (data.files) excalidrawApiRef.current.addFiles(data.files);
     };
-    firestoreUnsubscribeRef.current = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, handleRemoteUpdate);
+    const unsubscribe = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, handleRemoteUpdate);
+    return () => unsubscribe();
   }, [isExcalidrawReady]);
-
-  const handleWhiteboardChange = (elements) => {
-    if (isUpdatingFromRemoteRef.current) { isUpdatingFromRemoteRef.current = false; return; }
-    if (debounceHandlerRef.current) clearTimeout(debounceHandlerRef.current);
-    debounceHandlerRef.current = setTimeout(() => updateWhiteboardElements(booking._id, elements, currentUser.cb_id), 150);
-  };
 
   if (callState === "waiting") return <div className="waiting-screen"><h2>Waiting for tutor...</h2></div>;
 
   return (
     <div className="video-call-page">
-      <div className="video-container" ref={videoContainerRef}>
-        <video ref={remoteVideoRef} id="remoteVideo" autoPlay playsInline className={`remote-video ${isSwapped ? "small-video" : "big-video"}`} onClick={swapVideos} />
-        <video ref={localVideoRef} id="localVideo" autoPlay muted playsInline className={`local-video ${isSwapped ? "big-video" : "small-video"} ${isMutedVideo ? 'camera-off' : ''}`} onClick={swapVideos} />
-      </div>
+      <div className="video-container">
+        {/* Remote User Video */}
+        <video
+          ref={remoteVideoRef}
+          id="remoteVideo"
+          autoPlay
+          playsInline
+          className="remote-video big-video"
+        />
 
-      <PermissionGuideModal />
+        {/* Local User Video */}
+        <video
+          ref={localVideoRef}
+          id="localVideo"
+          autoPlay
+          muted
+          playsInline
+          className={`local-video small-video ${isMutedVideo ? 'hidden' : ''}`}
+        />
+
+        {isMutedVideo && (
+          <div className="local-video-placeholder">Camera Off</div>
+        )}
+      </div>
 
       <div className={`whiteboard-container ${showWhiteboard ? "visible" : ""}`}>
         <button className="close-whiteboard-btn" onClick={() => setShowWhiteboard(false)}>&times;</button>
         <Excalidraw
           excalidrawAPI={(api) => { excalidrawApiRef.current = api; setIsExcalidrawReady(true); }}
-          onChange={handleWhiteboardChange}
+          onChange={(elements) => {
+            if (isUpdatingFromRemoteRef.current) { isUpdatingFromRemoteRef.current = false; return; }
+            updateWhiteboardElements(booking._id, elements, currentUser.cb_id);
+          }}
         />
       </div>
 
       <footer className="call-footer">
         <h2>{booking.subject}</h2>
-        <span className={`call-status ${callState}`}>{callState.toUpperCase()}</span>
+        <div className="controls">
+          <button onClick={() => handleMediaToggle("audio")} className={`control-btn ${isMutedAudio ? 'off' : ''}`}>
+            {isMutedAudio ? <FaMicrophoneSlash /> : <FaMicrophone />}
+          </button>
+          <button onClick={() => handleMediaToggle("video")} className={`control-btn ${isMutedVideo ? 'off' : ''}`}>
+            {isMutedVideo ? <FaVideoSlash /> : <FaVideo />}
+          </button>
+          <button onClick={() => setShowWhiteboard(!showWhiteboard)} className="control-btn">
+            <FaChalkboard />
+          </button>
+          <button onClick={endCall} className="control-btn end-btn">
+            <FaPhoneSlash />
+          </button>
+        </div>
       </footer>
-
-      <div className="controls">
-        <button onClick={() => handleMediaToggle("audio")} className="control-btn">
-          {isMutedAudio ? <FaMicrophoneSlash /> : <FaMicrophone />}
-        </button>
-        <button onClick={() => handleMediaToggle("video")} className="control-btn">
-          {isMutedVideo ? <FaVideoSlash /> : <FaVideo />}
-        </button>
-        <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`control-btn ${showWhiteboard ? "active" : ""}`}>
-          <FaChalkboard />
-        </button>
-        <button onClick={endCall} className="control-btn end-btn">
-          <FaPhoneSlash />
-        </button>
-      </div>
     </div>
   );
 };
 
 export default VideoCall;
-
-
-
-
-
-
 
 
 // import React, { useState, useEffect, useRef } from "react";
