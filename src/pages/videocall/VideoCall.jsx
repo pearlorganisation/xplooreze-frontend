@@ -302,21 +302,21 @@ const VideoCall = () => {
         if (!isMountedRef.current) return;
 
         // --- 3. Connect to Chat ---
-        if (!ConnectyCube.chat.isConnected) {
-          const userCredentials = { userId, password };
-          await ConnectyCube.chat.connect(userCredentials);
+       if (!ConnectyCube.chat.isConnected) {
+  const userCredentials = { userId, password };
+  await ConnectyCube.chat.connect(userCredentials);
 
-          let attempts = 0;
-          const maxAttempts = 60;
-          while (!ConnectyCube.chat.isConnected && attempts < maxAttempts) {
-            if (!isMountedRef.current) return;
-            await new Promise((resolve) => setTimeout(resolve, 500));
-            attempts++;
-          }
-          if (!ConnectyCube.chat.isConnected) {
-            throw new Error("Chat connection failed after polling.");
-          }
-        }
+  // Poll for connection status to be absolutely sure
+  let attempts = 0;
+  while (!ConnectyCube.chat.isConnected && attempts < 20) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    attempts++;
+  }
+  
+  if (!ConnectyCube.chat.isConnected) {
+    throw new Error("Chat connection failed.");
+  }
+}
         if (!isMountedRef.current) return;
 
         // --- 4. Set up Listeners ---
@@ -380,6 +380,8 @@ const VideoCall = () => {
           if (!isMountedRef.current) return;
           sessionRef.current = callSession;
           if (!isTutor) {
+             callSession.accept({});
+    setCallState("active");
             if (isMountedRef.current) setCallState("connecting");
             let localStream = null;
 
@@ -655,107 +657,50 @@ localStreamRef.current = null;
   };
 
   const startCall = async () => {
-    let localStream = null;
+    // Prevent duplicate calls
+    if (sessionRef.current) return;
+
     try {
-      const hasPermissions =  true || await requestMediaPermissions();
-      if (!hasPermissions) {
-        setError(
-          "Media permissions denied. Please allow camera and microphone access.",
-        );
-        setCallState("ended");
-        return;
-        // throw new Error(
-        //   "Media permissions denied. Please allow camera and microphone access.",
-        // );
-      }
-      if (!isMountedRef.current) return;
       if (!ConnectyCube.chat.isConnected) {
-        throw new Error(
-          "Not connected to chat. Please ensure authentication succeeded.",
-        );
+        throw new Error("Not connected to chat. Please ensure authentication succeeded.");
       }
+      
       if (isMountedRef.current) setCallState("connecting");
 
-      const calleesIds = [opponentId];
-      const sessionType = ConnectyCube.videochat.CallType.VIDEO;
-     const newSession = ConnectyCube.videochat.createNewSession(
-  calleesIds,
-  sessionType,
-  { callTimeout: 60 } // Set to 60 seconds (or more)
-);
-
+      const newSession = ConnectyCube.videochat.createNewSession(
+        [opponentId],
+        ConnectyCube.videochat.CallType.VIDEO,
+        { callTimeout: 120 } // Increased timeout
+      );
+      
       sessionRef.current = newSession;
+      
+      // Initiate the call
+      newSession.call({ bookingId: booking._id });
+      
+      // Automatically transition to active after 3s to allow handshake
+      setTimeout(() => {
+        if (isMountedRef.current && callState !== "active") {
+          setCallState("active");
+        }
+      }, 3000);
 
-      const mediaParams = {
-        audio: true,
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          frameRate: { ideal: 15 },
-        },
-      };
-      // localStream = await newSession.getUserMedia(mediaParams);
-      // if (!isMountedRef.current) {
-      //   stopLocalStream(localStream);
-      //   return;
-      // }
-      // // --- ADD THESE LINES ---
-      // newSession.mute("audio");
-      // newSession.mute("video");
-      // // -----------------------
-      // localStreamRef.current = localStream;
-      // try {
-      //   newSession.attachMediaStream("localVideo", localStream, {
-      //     muted: true,
-      //   });
-      // } catch (attachError) {
-      //   console.error("Error attaching local stream:", attachError);
-      // }
- // Start call WITHOUT media
-
-
-// No getUserMedia here initially
-      const extension = { bookingId: booking._id };
-      // newSession.call(extension, (error) => {
-      //   if (error) {
-      //     stopLocalStream(localStreamRef.current);
-      //     localStreamRef.current = null;
-      //     if (isMountedRef.current) {
-      //       setError("Failed to initiate call. Please try again.");
-      //       setCallState("ended");
-      //     }
-      //   } else {
-      //     if (isMountedRef.current) setCallState("ringing");
-      //   }
-      // });
-   sessionRef.current = newSession;
-newSession.call({ bookingId: booking._id });
-   setTimeout(() => {
-  if (isMountedRef.current && callState !== "active") {
-    setCallState("active");
-  }
-}, 3000);
     } catch (err) {
       console.error("Error starting call:", err);
-
-      // --- FIX #3: Aggressive stream cleanup ---
-      // Stop both just to be safe.
-      stopLocalStream(localStream);
+      
+      // Cleanup
       stopLocalStream(localStreamRef.current);
-      // --- END FIX ---
-
       localStreamRef.current = null;
+      
       let errorMsg = "Failed to start video call.";
-      if (
-        err.name === "NotAllowedError" ||
-        err.message.includes("permission")
-      ) {
+      if (err.name === "NotAllowedError" || err.message.includes("permission")) {
         errorMsg += " Please check microphone and camera permissions.";
       } else if (err.message.includes("Not connected to chat")) {
         errorMsg += " Chat connection failed. Please refresh.";
       } else {
         errorMsg += ` ${err.message || "Please check permissions."}`;
       }
+      
       if (isMountedRef.current) {
         setError(errorMsg);
         setCallState("ended");
