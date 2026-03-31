@@ -969,12 +969,31 @@ import {
   FaExpand,
   FaCompress,
   FaChalkboard,
+  FaLock,
+  FaSyncAlt,
 } from "react-icons/fa";
+import { createPortal } from "react-dom";
+
+const getBookingDurationInMs = (booking) => {
+  try {
+    const [startHour, startMin] = booking.startTime.split(":").map(Number);
+    const [endHour, endMin] = booking.endTime.split(":").map(Number);
+    const totalStartMinutes = startHour * 60 + startMin;
+    const totalEndMinutes = endHour * 60 + endMin;
+    const durationInMinutes = totalEndMinutes - totalStartMinutes;
+    if (durationInMinutes <= 0) return null;
+    return durationInMinutes * 60 * 1000;
+  } catch (e) {
+    console.error("Error calculating booking duration:", e);
+    return null;
+  }
+};
 
 const VideoCall = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { booking, isTutor = true } = location.state || {};
+  const [showPermissionGuide, setShowPermissionGuide] = useState(false);
 
   // --- Refs ---
   const localVideoRef = useRef(null);
@@ -985,6 +1004,7 @@ const VideoCall = () => {
   const sessionRef = useRef(null);
   const isMountedRef = useRef(true);
   const updateIntervalRef = useRef(null);
+  const bookingEndTimerRef = useRef(null);
 
   // --- State ---
   const [isMutedAudio, setIsMutedAudio] = useState(true);
@@ -1004,18 +1024,43 @@ const VideoCall = () => {
   const lastSentElementsRef = useRef(null);
   const sentFilesRef = useRef(new Set());
 
-  if (!booking) return <div className="error-screen">No booking data provided.</div>;
-
   const currentUser = isTutor ? booking.tutorId || {} : booking.studentId || {};
   const opponentUser = isTutor ? booking.studentId || {} : booking.tutorId || {};
   const userId = parseInt(currentUser.cb_id);
   const opponentId = parseInt(opponentUser.cb_id);
 
-  // --- 1. Lifecycle & Signaling ---
+  const PermissionGuideModal = () => {
+    if (!showPermissionGuide) return null;
+    return createPortal(
+      <div className="permission-modal-overlay">
+        <div className="permission-modal-content">
+          <button className="close-x" onClick={() => setShowPermissionGuide(false)}>&times;</button>
+          <div className="modal-left">
+            <div className="modal-header">
+              <div className="icon-badge"><FaLock /></div>
+              <div>
+                <h2>Camera & Mic Access</h2>
+                <p>Permissions are required to use audio and video.</p>
+              </div>
+            </div>
+            <div className="guide-steps">
+              <div className="step-item"><div className="step-number">01</div><div className="step-text"><strong>Click the Lock</strong><p>Click the lock icon in the address bar.</p></div></div>
+              <div className="step-item"><div className="step-number">02</div><div className="step-text"><strong>Allow Hardware</strong><p>Switch Camera and Microphone to "On".</p></div></div>
+            </div>
+            <div className="modal-actions">
+              <button className="reload-btn" onClick={() => window.location.reload()}><FaSyncAlt /> Reload Page</button>
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
+  // --- Main Initialization ---
   useEffect(() => {
     isMountedRef.current = true;
-
-    const initCall = async () => {
+    const initSDK = async () => {
       try {
         const CREDENTIALS = {
           appId: parseInt(import.meta.env.VITE_CONNECTYCUBE_APP_ID || "0"),
@@ -1026,7 +1071,6 @@ const VideoCall = () => {
         if (!ConnectyCube.session) {
           await ConnectyCube.createSession({ login: currentUser.email, password: currentUser.email });
         }
-
         if (!ConnectyCube.chat.isConnected) {
           await ConnectyCube.chat.connect({ userId, password: currentUser.email });
         }
@@ -1036,15 +1080,16 @@ const VideoCall = () => {
           remoteStreamRef.current = stream;
           session.attachMediaStream("remoteVideo", stream);
           if (isMountedRef.current) setCallState("active");
+          startTrackingLogic();
         };
 
         ConnectyCube.videochat.onCallListener = (callSession) => {
           sessionRef.current = callSession;
           if (!isTutor) {
-            // STUDENT: Accept immediately without media (Google Meet style)
+            // Student Accepts immediately without asking for permissions yet
             callSession.accept({});
             if (isMountedRef.current) setCallState("active");
-            startTracking();
+            startTrackingLogic();
           }
         };
 
@@ -1052,56 +1097,60 @@ const VideoCall = () => {
           if (isMountedRef.current) setCallState("ended");
         };
 
-        // START CALL (TUTOR)
         if (isTutor) {
-          const calleesIds = [opponentId];
-          const sessionType = ConnectyCube.videochat.CallType.VIDEO;
-          const newSession = ConnectyCube.videochat.createNewSession(calleesIds, sessionType, {});
-          sessionRef.current = newSession;
-          newSession.call({ bookingId: booking._id });
-          if (isMountedRef.current) setCallState("active");
-          startTracking();
+          startCallHandshake();
         } else {
-          if (isMountedRef.current) setCallState("waiting");
+          setCallState("waiting");
         }
-
       } catch (err) {
-        setError("Failed to connect: " + err.message);
+        setError("Connection failed: " + err.message);
       }
     };
 
-    initCall();
-
+    initSDK();
     return () => {
       isMountedRef.current = false;
-      if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
       if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
       if (sessionRef.current) sessionRef.current.stop({});
-      if (firestoreUnsubscribeRef.current) firestoreUnsubscribeRef.current();
+      if (updateIntervalRef.current) clearInterval(updateIntervalRef.current);
     };
   }, []);
 
-  const startTracking = () => {
+  const startTrackingLogic = () => {
     startClassJoin(booking._id);
     updateIntervalRef.current = setInterval(() => updateClassJoin(booking._id), 60000);
   };
 
-  // --- 2. Media Handling (The "Google Meet" logic) ---
+  const startCallHandshake = () => {
+    const calleesIds = [opponentId];
+    const sessionType = ConnectyCube.videochat.CallType.VIDEO;
+    const newSession = ConnectyCube.videochat.createNewSession(calleesIds, sessionType, {});
+    sessionRef.current = newSession;
+    newSession.call({ bookingId: booking._id });
+    setCallState("active"); // Move to active immediately so UI controls appear
+  };
+
+  // --- Google Meet Style Media Toggle ---
   const handleMediaToggle = async (type) => {
+    if (!sessionRef.current) return;
+
     try {
-      // If no local stream exists, request it now (this shows the browser prompt)
+      // 1. If we don't have a local stream yet, request it now
       if (!localStreamRef.current) {
-        const mediaParams = { audio: true, video: true };
-        const stream = await sessionRef.current.getUserMedia(mediaParams);
+        const stream = await sessionRef.current.getUserMedia({
+          audio: true,
+          video: { width: 640, height: 480, frameRate: 15 }
+        });
         localStreamRef.current = stream;
 
-        // Initially mute both at the hardware level until we confirm the state
+        // Match physical hardware state to our default UI state (Muted)
         sessionRef.current.mute("audio");
         sessionRef.current.mute("video");
 
         sessionRef.current.attachMediaStream("localVideo", stream, { muted: true });
       }
 
+      // 2. Perform the actual toggle
       if (type === "audio") {
         if (isMutedAudio) {
           sessionRef.current.unmute("audio");
@@ -1120,21 +1169,12 @@ const VideoCall = () => {
         }
       }
     } catch (err) {
-      alert("Please allow camera/microphone access in your browser.");
-      console.error(err);
-    }
-  };
-
-  // --- 3. UI Helpers ---
-  const swapVideos = () => setIsSwapped(!isSwapped);
-
-  const toggleFullScreen = () => {
-    if (!document.fullscreenElement) {
-      videoContainerRef.current.requestFullscreen().catch(err => console.error(err));
-      setIsFullScreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullScreen(false);
+      console.error("Hardware error:", err);
+      if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+        setShowPermissionGuide(true);
+      } else {
+        alert("Could not access camera/microphone.");
+      }
     }
   };
 
@@ -1143,10 +1183,21 @@ const VideoCall = () => {
     navigate(-1);
   };
 
-  // --- 4. Whiteboard Logic (Firestore) ---
+  const swapVideos = () => setIsSwapped(!isSwapped);
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      videoContainerRef.current.requestFullscreen();
+      setIsFullScreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
+  // --- Whiteboard Logic ---
   useEffect(() => {
     if (!isExcalidrawReady || !booking._id || !excalidrawApiRef.current) return;
-
     const handleRemoteUpdate = (data) => {
       if (!isMountedRef.current || !data || data.lastUpdatedBy === currentUser.cb_id) return;
       isUpdatingFromRemoteRef.current = true;
@@ -1156,32 +1207,19 @@ const VideoCall = () => {
       }
       if (data.files) excalidrawApiRef.current.addFiles(data.files);
     };
-
-    firestoreUnsubscribeRef.current = listenToWhiteboard(
-      booking._id, currentUser.cb_id, opponentUser.cb_id, handleRemoteUpdate
-    );
+    firestoreUnsubscribeRef.current = listenToWhiteboard(booking._id, currentUser.cb_id, opponentUser.cb_id, handleRemoteUpdate);
   }, [isExcalidrawReady]);
 
   const handleWhiteboardChange = (elements) => {
-    if (isUpdatingFromRemoteRef.current) {
-      isUpdatingFromRemoteRef.current = false;
-      return;
-    }
+    if (isUpdatingFromRemoteRef.current) { isUpdatingFromRemoteRef.current = false; return; }
     if (debounceHandlerRef.current) clearTimeout(debounceHandlerRef.current);
     debounceHandlerRef.current = setTimeout(() => {
       updateWhiteboardElements(booking._id, elements, currentUser.cb_id);
     }, 150);
   };
 
-  const toggleWhiteboard = () => setShowWhiteboard(!showWhiteboard);
-
-  // --- 5. Render ---
   if (callState === "waiting") {
-    return <div className="waiting-screen"><h2>Waiting for call to start...</h2><button onClick={() => navigate(-1)}>Back</button></div>;
-  }
-
-  if (error) {
-    return <div className="error-screen"><h2>{error}</h2><button onClick={() => navigate(-1)}>Back</button></div>;
+    return <div className="waiting-screen"><h2>Waiting for tutor...</h2><button onClick={() => navigate(-1)}>Back</button></div>;
   }
 
   return (
@@ -1205,9 +1243,10 @@ const VideoCall = () => {
           onClick={swapVideos}
         />
       </div>
+      <PermissionGuideModal />
 
       <div className={`whiteboard-container ${showWhiteboard ? "visible" : ""}`}>
-        <button className="close-whiteboard-btn" onClick={toggleWhiteboard}>&times;</button>
+        <button className="close-whiteboard-btn" onClick={() => setShowWhiteboard(false)}>&times;</button>
         <Excalidraw
           excalidrawAPI={(api) => { excalidrawApiRef.current = api; setIsExcalidrawReady(true); }}
           onChange={handleWhiteboardChange}
@@ -1227,7 +1266,7 @@ const VideoCall = () => {
           <button onClick={() => handleMediaToggle("video")} className="control-btn">
             {isMutedVideo ? <FaVideoSlash /> : <FaVideo />}
           </button>
-          <button onClick={toggleWhiteboard} className={`control-btn ${showWhiteboard ? "active" : ""}`}>
+          <button onClick={() => setShowWhiteboard(!showWhiteboard)} className={`control-btn ${showWhiteboard ? "active" : ""}`}>
             <FaChalkboard />
           </button>
           <button onClick={endCall} className="control-btn end-btn">
