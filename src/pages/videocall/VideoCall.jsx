@@ -116,7 +116,7 @@ const VideoCall = () => {
             <div className="modal-actions">
               <button
                 className="reload-btn"
-                onClick={() => window.location.reload()}
+                // onClick={() => window.location.reload()}
               >
                 <FaSyncAlt /> Reload Class
               </button>
@@ -382,45 +382,53 @@ const VideoCall = () => {
           if (!isTutor) {
             if (isMountedRef.current) setCallState("connecting");
             let localStream = null;
-            try {
-              const mediaParams = {
-                audio: true,
-                video: {
-                  width: { ideal: 640 },
-                  height: { ideal: 480 },
-                  frameRate: { ideal: 15 },
-                },
-              };
-              localStream = await callSession.getUserMedia(mediaParams);
-              if (!isMountedRef.current) {
-                stopLocalStream(localStream);
-                return;
-              }
-              // --- ADD THESE LINES ---
-              callSession.mute("audio");
-              callSession.mute("video");
-              // -----------------------
-              localStreamRef.current = localStream;
-              try {
-                callSession.attachMediaStream("localVideo", localStream, {
-                  muted: true,
-                });
-              } catch (attachError) {
-                console.error("Error attaching local stream:", attachError);
-              }
-              callSession.accept({});
-            } catch (err) {
-              console.error("Error accepting call:", err);
-              stopLocalStream(localStream);
-              localStreamRef.current = null;
-              if (isMountedRef.current) {
-                setError(
-                  "Failed to join call. Please check microphone and camera permissions.",
-                );
-                setCallState("ended");
-              }
-              callSession.reject({});
-            }
+
+            // try {
+            //   const mediaParams = {
+            //     audio: true,
+            //     video: {
+            //       width: { ideal: 640 },
+            //       height: { ideal: 480 },
+            //       frameRate: { ideal: 15 },
+            //     },
+            //   };
+            //   //student
+            //   localStream = await callSession.getUserMedia(mediaParams);
+            //   if (!isMountedRef.current) {
+            //     stopLocalStream(localStream);
+            //     return;
+            //   }
+            //   // --- ADD THESE LINES ---
+            //   callSession.mute("audio");
+            //   callSession.mute("video");
+            //   // -----------------------
+            //   localStreamRef.current = localStream;
+            //   try {
+            //     callSession.attachMediaStream("localVideo", localStream, {
+            //       muted: true,
+            //     });
+            //   } catch (attachError) {
+            //     console.error("Error attaching local stream:", attachError);
+            //   }
+            //   callSession.accept({});
+            // } catch (err) {
+            //   console.error("Error accepting call:", err);
+            //   stopLocalStream(localStream);
+            //   localStreamRef.current = null;
+            //   if (isMountedRef.current) {
+            //     setError(
+            //       "Failed to join call. Please check microphone and camera permissions.",
+            //     );
+            //     setCallState("ended");
+            //   }
+            //   callSession.reject({});
+            // }
+
+          callSession.accept({});
+          setCallState("active"); // ✅ ADD THIS
+
+// No getUserMedia here
+localStreamRef.current = null;
           } else {
             if (isMountedRef.current) setCallState("ringing");
           }
@@ -630,7 +638,9 @@ const VideoCall = () => {
         audio: true,
         video: true,
       });
-      stream.getTracks().forEach((track) => track.stop());
+      // stream.getTracks().forEach((track) => track.stop());
+          localStreamRef.current = stream;
+
       return true;
     } catch (err) {
       console.error("Permission denied:", err);
@@ -647,7 +657,7 @@ const VideoCall = () => {
   const startCall = async () => {
     let localStream = null;
     try {
-      const hasPermissions = await requestMediaPermissions();
+      const hasPermissions =  true || await requestMediaPermissions();
       if (!hasPermissions) {
         setError(
           "Media permissions denied. Please allow camera and microphone access.",
@@ -668,11 +678,12 @@ const VideoCall = () => {
 
       const calleesIds = [opponentId];
       const sessionType = ConnectyCube.videochat.CallType.VIDEO;
-      const newSession = ConnectyCube.videochat.createNewSession(
-        calleesIds,
-        sessionType,
-        {},
-      );
+     const newSession = ConnectyCube.videochat.createNewSession(
+  calleesIds,
+  sessionType,
+  { callTimeout: 60 } // Set to 60 seconds (or more)
+);
+
       sessionRef.current = newSession;
 
       const mediaParams = {
@@ -683,37 +694,47 @@ const VideoCall = () => {
           frameRate: { ideal: 15 },
         },
       };
-      localStream = await newSession.getUserMedia(mediaParams);
-      if (!isMountedRef.current) {
-        stopLocalStream(localStream);
-        return;
-      }
-      // --- ADD THESE LINES ---
-      newSession.mute("audio");
-      newSession.mute("video");
-      // -----------------------
-      localStreamRef.current = localStream;
-      try {
-        newSession.attachMediaStream("localVideo", localStream, {
-          muted: true,
-        });
-      } catch (attachError) {
-        console.error("Error attaching local stream:", attachError);
-      }
+      // localStream = await newSession.getUserMedia(mediaParams);
+      // if (!isMountedRef.current) {
+      //   stopLocalStream(localStream);
+      //   return;
+      // }
+      // // --- ADD THESE LINES ---
+      // newSession.mute("audio");
+      // newSession.mute("video");
+      // // -----------------------
+      // localStreamRef.current = localStream;
+      // try {
+      //   newSession.attachMediaStream("localVideo", localStream, {
+      //     muted: true,
+      //   });
+      // } catch (attachError) {
+      //   console.error("Error attaching local stream:", attachError);
+      // }
+ // Start call WITHOUT media
 
+
+// No getUserMedia here initially
       const extension = { bookingId: booking._id };
-      newSession.call(extension, (error) => {
-        if (error) {
-          stopLocalStream(localStreamRef.current);
-          localStreamRef.current = null;
-          if (isMountedRef.current) {
-            setError("Failed to initiate call. Please try again.");
-            setCallState("ended");
-          }
-        } else {
-          if (isMountedRef.current) setCallState("ringing");
-        }
-      });
+      // newSession.call(extension, (error) => {
+      //   if (error) {
+      //     stopLocalStream(localStreamRef.current);
+      //     localStreamRef.current = null;
+      //     if (isMountedRef.current) {
+      //       setError("Failed to initiate call. Please try again.");
+      //       setCallState("ended");
+      //     }
+      //   } else {
+      //     if (isMountedRef.current) setCallState("ringing");
+      //   }
+      // });
+   sessionRef.current = newSession;
+newSession.call({ bookingId: booking._id });
+   setTimeout(() => {
+  if (isMountedRef.current && callState !== "active") {
+    setCallState("active");
+  }
+}, 3000);
     } catch (err) {
       console.error("Error starting call:", err);
 
@@ -743,9 +764,28 @@ const VideoCall = () => {
   };
 
   // --- FIX #2: Reliable Mute ---
-  const toggleMuteAudio = () => {
+const toggleMuteAudio = async () => {
     if (!sessionRef.current) return;
 
+    // If no stream exists, request permission on-demand
+    if (!localStreamRef.current) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        localStreamRef.current = stream;
+        sessionRef.current.attachMediaStream("localVideo", stream, { muted: true });
+        
+        // Unmute immediately after getting permission
+        sessionRef.current.unmute("audio");
+        setIsMutedAudio(false);
+        return;
+      } catch (err) {
+        console.error("Mic permission denied or no mic found", err);
+        setShowPermissionGuide(true);
+        return;
+      }
+    }
+
+    // Toggle existing stream
     setIsMutedAudio((prevIsMuted) => {
       const newMutedState = !prevIsMuted;
       if (newMutedState) {
@@ -757,10 +797,30 @@ const VideoCall = () => {
     });
   };
 
+
   // --- FIX #2: Reliable Mute ---
-  const toggleMuteVideo = () => {
+  const toggleMuteVideo = async () => {
     if (!sessionRef.current) return;
 
+    // If no stream exists, request permission on-demand
+    if (!localStreamRef.current) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        localStreamRef.current = stream;
+        sessionRef.current.attachMediaStream("localVideo", stream, { muted: true });
+        
+        // Unmute immediately after getting permission
+        sessionRef.current.unmute("video");
+        setIsMutedVideo(false);
+        return;
+      } catch (err) {
+        console.error("Camera permission denied or no camera found", err);
+        setShowPermissionGuide(true);
+        return;
+      }
+    }
+
+    // Toggle existing stream
     setIsMutedVideo((prevIsMuted) => {
       const newMutedState = !prevIsMuted;
       if (newMutedState) {
