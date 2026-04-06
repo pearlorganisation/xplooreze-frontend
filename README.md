@@ -1,5 +1,5 @@
 # React + Vited
-
+s
 This template provides a minismal setup to get React working in Vite with HMR and some ESLint rules.
 sWdf
 Currently, two official plugins are available:s
