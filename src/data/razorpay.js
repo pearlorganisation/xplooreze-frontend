@@ -24,12 +24,21 @@ export const handlePayment = async ({
     const loaded = await loadRazorpayScript();
 
     if (!loaded) {
-      onError?.call("Failed to load Razorpay. Check your internet connection.");
+      onError?.("Failed to load Razorpay. Check your internet connection.");
+      return;
+    }
+
+    const key = import.meta.env.VITE_RAZORPAY_KEY;
+    if (!key || typeof key !== "string" || !key.trim()) {
+      onError?.(
+        "Payment configuration error: Razorpay key is missing. " +
+          "If you updated .env, restart the dev server and rebuild before deploying."
+      );
       return;
     }
 
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY,
+      key,
       amount: order.price * 100,
       currency: order.currency,
       name: APP_NAME,

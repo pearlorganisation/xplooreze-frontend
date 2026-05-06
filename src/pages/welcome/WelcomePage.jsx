@@ -98,7 +98,7 @@ Team Xplooreze
         <div className="header-content">
           <div className="hero-content">
             <h1>
-              Learn Anything.
+              Learn Anythings.
               <br />
               Anywhere.
               <br />

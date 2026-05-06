@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./BlogDetailPage.css";
 import { getBlog } from "../../data/modules/blog-module";
+import { Helmet } from "react-helmet-async";
 
 function BlogDetailPage() {
     const { blogId } = useParams();

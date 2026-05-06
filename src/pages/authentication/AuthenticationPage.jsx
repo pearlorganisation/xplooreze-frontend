@@ -154,7 +154,7 @@ export default function AuthenticationPage() {
     max_hour_charge: "",
   });
 
-  const indiaOptions = [
+  const indiaOptions = [ 
     { label: "₹200–₹500 (Starter Tutor)", value: "200-500" },
     { label: "₹500–₹1,000 (Skilled Tutor)", value: "500-1000" },
     { label: "₹1,000–₹2,000 (Experienced Tutor)", value: "1000-2000" },

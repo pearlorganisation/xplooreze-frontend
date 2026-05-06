@@ -216,3 +216,39 @@ export async function submitRating({ bookingId, rating }) {
     throw resolveAxiosError(error).message || defaultError;
   }
 }
+
+export async function rescheduleBooking({ bookingId, startDate, startTime, endTime, reason = "" }) {
+  const defaultError = "Something went wrong while rescheduling booking.";
+  try {
+    const response = await api.post("/reschedule-booking", {
+      bookingId,
+      startDate,
+      startTime,
+      endTime,
+      reason,
+    });
+
+    if (response.data.success === true) {
+      return response.data.data;
+    }
+
+    throw response.data.message || defaultError;
+  } catch (error) {
+    throw resolveAxiosError(error).message || defaultError;
+  }
+}
+
+export async function requestRefund({ bookingId, reason }) {
+  const defaultError = "Something went wrong while requesting refund.";
+  try {
+    const response = await api.post("/request-refund", { bookingId, reason });
+
+    if (response.data.success === true) {
+      return response.data.data;
+    }
+
+    throw response.data.message || defaultError;
+  } catch (error) {
+    throw resolveAxiosError(error).message || defaultError;
+  }
+}
