@@ -1,3 +1,4 @@
+import React from "react";
 // NavBar.jsx
 import "./NavBar.css";
 import { useEffect, useRef, useState } from "react";
