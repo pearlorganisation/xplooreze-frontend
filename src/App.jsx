@@ -42,6 +42,7 @@ import { BankDetailsPage } from "./pages/tutor/bank-details/BankDetailsPage";
 import { VerificationPage } from "./pages/tutor/verification-page/VerificationPage";
 import SubCategoryPage from "./pages/student/category/SubCategoryPage";
 import CategoryPage from "./pages/student/category/CategoryPage";
+import FaqSection from "./components/FaqSection";
 
 function AppContent() {
   const location = useLocation();
@@ -238,6 +239,9 @@ function AppContent() {
             }
           />
         </Routes>
+        {/* {location.pathname === "/" && <FaqSection />} */}
+        <FaqSection />
+
         <Footer />
       </div>
     </>
