@@ -47,7 +47,7 @@ import FaqSection from "./components/FaqSection";
 function AppContent() {
   const location = useLocation();
   // const pathSegments = location.pathname.split("/").filter(Boolean);
-  //s
+  //ss
 
   const pageRequiringNavBar = [
     "/welcome",
