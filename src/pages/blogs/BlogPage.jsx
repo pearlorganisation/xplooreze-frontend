@@ -1,4 +1,5 @@
-"use client";
+import React from "react";
+("use client");
 import { useEffect, useState } from "react";
 import BlogCard from "../../components/blog/BlogCard";
 import "./BlogPage.css";

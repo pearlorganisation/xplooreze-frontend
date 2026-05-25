@@ -1,3 +1,4 @@
+import React from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./TutorDetail.css";
 import { useEffect, useState, useMemo } from "react";
