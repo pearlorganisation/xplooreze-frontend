@@ -1,3 +1,5 @@
+import React from "react"; 
+
 import { Navigate } from "react-router-dom";
 import Loading from "../../components/loading/Loading";
 import { useAuth } from "../../hooks/AuthProvider";
