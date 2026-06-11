@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import React from "react";
+import { createContext, useContext, useState, useEffect } from 'react';
 import { getProfile } from '../data/modules/users-data-module';
 
 const AuthContext = createContext();

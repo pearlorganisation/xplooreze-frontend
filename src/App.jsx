@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -50,6 +51,12 @@ import { useAuth } from "./hooks/AuthProvider";
 function AppContent() {
   const location = useLocation();
   const { isLoggedIn, user } = useAuth();
+import FaqSection from "./components/FaqSection";
+
+function AppContent() {
+  const location = useLocation();
+  // const pathSegments = location.pathname.split("/").filter(Boolean);
+  //ssd
 
   const pageRequiringNavBar = [
     "/welcome",
@@ -248,6 +255,9 @@ function AppContent() {
             }
           />
         </Routes>
+        {/* {location.pathname === "/" && <FaqSection />} */}
+        <FaqSection />
+
         <Footer />
       </div>
     </>

@@ -1,3 +1,4 @@
+import React from "react";
 import './Footer.css';
 import { APP_NAME, CONTACT_DETAILS } from '../../data/config';
 import React from 'react';

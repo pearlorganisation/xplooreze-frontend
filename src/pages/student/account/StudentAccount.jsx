@@ -8,9 +8,30 @@ import { getCitiesByState, getCountries, getStatesByCountry } from '../../../dat
 import MultiSelect from '../../../components/multiselect/MultiSelect';
 import { getCategories, getSubCategories } from '../../../data/modules/dynamic-module';
 import { submitStudentForm, submitTutorForm } from '../../../data/modules/auth-module';
+import React from "react";
+import "./StudentAccount.css";
+import { useAuth } from "../../../hooks/AuthProvider";
+import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
+import { useEffect, useRef, useState } from "react";
+import { FaEdit, FaRegEdit, FaSignOutAlt, FaUserEdit } from "react-icons/fa";
+import ConfirmDialog from "../../../components/dialog/ConfirmDialog";
+import {
+  getCitiesByState,
+  getCountries,
+  getStatesByCountry,
+} from "../../../data/modules/location-module";
+import MultiSelect from "../../../components/multiselect/MultiSelect";
+import {
+  getCategories,
+  getSubCategories,
+} from "../../../data/modules/dynamic-module";
+import {
+  submitStudentForm,
+  submitTutorForm,
+} from "../../../data/modules/auth-module";
 import Loading from "../../../components/loading/Loading";
-import SlotSelector from '../../../components/slot_selector/slot_selector';
-import { useNavigate } from 'react-router-dom';
+import SlotSelector from "../../../components/slot_selector/slot_selector";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentAccount() {
   const navigate = useNavigate();
@@ -26,20 +47,20 @@ export default function StudentAccount() {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: user.fullName || '',
-    emailId: user.email || '',
-    contactNumber: user.contactNumber || '',
+    fullName: user.fullName || "",
+    emailId: user.email || "",
+    contactNumber: user.contactNumber || "",
     country: user.country,
-    state: user.state || '',
-    city: user.city || '',
-    pincodes: user.pincodes || '',
+    state: user.state || "",
+    city: user.city || "",
+    pincodes: user.pincodes || "",
     timezone: user.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     avl_days: user.avl_days || [],
     avl_time: user.avl_time || [],
     tutoring_mode: user.tutoring_mode || [],
-    category: user.category || '',
+    category: user.category || "",
     subcategory: user.subcategory || [],
-    student_type: user.student_type || ''
+    student_type: user.student_type || "",
   });
 
   const [isMobile, setIsMobile] = useState(false);
@@ -55,7 +76,9 @@ export default function StudentAccount() {
   const [subCategories, setSubCategories] = useState([]);
 
   const selectingAvailabilityRef = useRef(false);
-  const [selectingAvailability, setSelectingAvailability] = useState(selectingAvailabilityRef.current);
+  const [selectingAvailability, setSelectingAvailability] = useState(
+    selectingAvailabilityRef.current,
+  );
 
   const handleSetSelectingAvailability = (type, open) => {
     selectingAvailabilityRef.current = open;
@@ -91,12 +114,13 @@ export default function StudentAccount() {
     setSubCategories(data);
     // Keep existing subcategories if they are valid for the new category
     if (Array.isArray(data) && Array.isArray(formData.subcategory)) {
-      const filteredSubcats = formData.subcategory.filter(subcat => data.includes(subcat));
-      setFormData(prev => ({ ...prev, subcategory: filteredSubcats }));
+      const filteredSubcats = formData.subcategory.filter((subcat) =>
+        data.includes(subcat),
+      );
+      setFormData((prev) => ({ ...prev, subcategory: filteredSubcats }));
     }
     return data;
   };
-
 
   // --- FIX 1: Country change effect ---
   useEffect(() => {
@@ -106,7 +130,7 @@ export default function StudentAccount() {
     if (selectedCountry && countries.includes(selectedCountry)) {
       fetchStates(selectedCountry);
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       state: "",
       city: "",
@@ -121,10 +145,15 @@ export default function StudentAccount() {
 
     const selectedCountry = formData.country;
     const selectedState = formData.state;
-    if (selectedCountry && selectedState && countries.includes(selectedCountry) && states.includes(selectedState)) {
+    if (
+      selectedCountry &&
+      selectedState &&
+      countries.includes(selectedCountry) &&
+      states.includes(selectedState)
+    ) {
       fetchCities(selectedCountry, selectedState);
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       city: "",
     }));
@@ -141,7 +170,6 @@ export default function StudentAccount() {
       setSubCategories([]);
     }
   }, [formData.category]);
-
 
   // --- FIX 1: Modified Initial Load useEffect ---
   useEffect(() => {
@@ -186,8 +214,8 @@ export default function StudentAccount() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -196,27 +224,31 @@ export default function StudentAccount() {
       const fileObject = URL.createObjectURL(file);
       setPreview(fileObject);
       try {
-        const result = await submitStudentForm({ ...user, emailId: formData.emailId, profilePhoto: file });
+        const result = await submitStudentForm({
+          ...user,
+          emailId: formData.emailId,
+          profilePhoto: file,
+        });
         // --- FIX 3: Update user context ---
         if (result) {
           setUser(result);
         }
       } catch (error) {
-        showErrorDialog('Update Error', error.toString());
+        showErrorDialog("Update Error", error.toString());
       }
     }
-  }
+  };
 
   const handleLogout = () => {
     setDialogData({
       title: "Logout",
-      message: 'Are you sure you want to logout?',
+      message: "Are you sure you want to logout?",
       color: "#dc2626",
       confirmText: "Logout",
       onConfirm: () => {
         setShowDialog(false);
         logout();
-      }
+      },
     });
     setShowDialog(true);
   };
@@ -238,7 +270,7 @@ export default function StudentAccount() {
         setShowDialog(true);
       }
     } catch (error) {
-      showErrorDialog('Update Error', error.toString());
+      showErrorDialog("Update Error", error.toString());
     }
     setLoading(false);
   };
@@ -246,19 +278,22 @@ export default function StudentAccount() {
   return (
     <div className="tutor-account-container">
       <main className="tutor-account-content">
-        <div className='tutor-account-header'>
+        <div className="tutor-account-header">
           <div className="title">Account</div>
           <button className="logout-button" onClick={handleLogout}>
-            <FaSignOutAlt />{isMobile ? '' : '   Logout'}
+            <FaSignOutAlt />
+            {isMobile ? "" : "   Logout"}
           </button>
         </div>
         {/* Reverted to your original form structure */}
-        <form className='form-details'>
-          {loading ? (<Loading />) : (
+        <form className="form-details">
+          {loading ? (
+            <Loading />
+          ) : (
             <>
-              <div className='personal-details'>
-                <p className='header-title'>Personal Details</p>
-                <div className='avatar'>
+              <div className="personal-details">
+                <p className="header-title">Personal Details</p>
+                <div className="avatar">
                   <input
                     type="file"
                     accept="image/*"
@@ -267,16 +302,28 @@ export default function StudentAccount() {
                     onChange={handleFileChange}
                   />
                   {user.profilePhoto ? (
-                    <img src={preview || `${import.meta.env.VITE_APP_BASE_URL}/${user.profilePhoto}`} alt="Profile" onError={(e) => { e.target.onerror = null; e.target.src = import.meta.env.VITE_PROFILE_PHOTO_PLACEHOLDER; }} className="avatar-img" />
-                  ) : (
+                    <img
+                      src={
+                        preview ||
+                        `${import.meta.env.VITE_APP_BASE_URL}/${user.profilePhoto}`
+                      }
+                      alt="Profile"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          import.meta.env.VITE_PROFILE_PHOTO_PLACEHOLDER;
+                      }}
+                      className="avatar-img"
+                    />
+                  ) : user.fullName ? (
                     user.fullName
-                      ? user.fullName
-                        .split(' ')
-                        .map(name => name[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()
-                      : '??'
+                      .split(" ")
+                      .map((name) => name[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase()
+                  ) : (
+                    "??"
                   )}
                   {/* <FaUserEdit className='edit-icon' onClick={() => (fileInputRef.current.click())} /> */}
                 </div>
@@ -293,7 +340,6 @@ export default function StudentAccount() {
                     required
                   />
                 </div>
-
 
                 <div className="form-group">
                   <label htmlFor="email" className="required">
@@ -322,14 +368,14 @@ export default function StudentAccount() {
                     type="tel"
                     placeholder="Contact Number"
                     pattern="\d*"
-                    value={(formData.contactNumber || "").replace(/[^0-9]/g, "").slice(0, 17)}
+                    value={(formData.contactNumber || "")
+                      .replace(/[^0-9]/g, "")
+                      .slice(0, 17)}
                     onChange={handleChange}
                     required
                     disabled={!!user.contactNumber}
                   />
                 </div>
-
-
 
                 <div className="form-group">
                   <label htmlFor="student_type" className="required">
@@ -349,7 +395,6 @@ export default function StudentAccount() {
                   </select>
                 </div>
 
-
                 <div className="form-group">
                   <label htmlFor="timezone" className="required">
                     Timezone
@@ -364,12 +409,9 @@ export default function StudentAccount() {
                     required
                   />
                 </div>
-
-
               </div>
-              <div className='other-details'>
-
-                <p className='header-title'>Teaching Preferences</p>
+              <div className="other-details">
+                <p className="header-title">Teaching Preferences</p>
 
                 <div className="form-group">
                   <label htmlFor="tutoring_mode" className="required">
@@ -378,9 +420,15 @@ export default function StudentAccount() {
                   <MultiSelect
                     name="tutoring_mode"
                     placeholder="Select Tutoring Mode"
-                    options={["Home Tutoring", "At Tutor Place", "Online Tutoring"]}
+                    options={[
+                      "Home Tutoring",
+                      "At Tutor Place",
+                      "Online Tutoring",
+                    ]}
                     value={formData.tutoring_mode || []}
-                    onChange={(items) => setFormData((prev) => ({ ...prev, tutoring_mode: items }))}
+                    onChange={(items) =>
+                      setFormData((prev) => ({ ...prev, tutoring_mode: items }))
+                    }
                   />
                 </div>
 
@@ -414,7 +462,9 @@ export default function StudentAccount() {
                     options={subCategories}
                     max={15}
                     value={formData.subcategory || []}
-                    onChange={(items) => setFormData((prev) => ({ ...prev, subcategory: items }))}
+                    onChange={(items) =>
+                      setFormData((prev) => ({ ...prev, subcategory: items }))
+                    }
                   />
                 </div>
 
@@ -438,12 +488,18 @@ export default function StudentAccount() {
                   </select>
                 </div>
 
-                <div className='grid-2'>
+                <div className="grid-2">
                   <div className="form-group">
                     <label htmlFor="state" className="required">
                       State
                     </label>
-                    <select id="state" name="state" value={formData.state} onChange={handleChange} required>
+                    <select
+                      id="state"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      required
+                    >
                       <option value="">Select State</option>
                       {states.map((state) => (
                         <option key={state} value={state}>
@@ -452,16 +508,21 @@ export default function StudentAccount() {
                       ))}
                     </select>
                   </div>
-
-
                 </div>
 
-                {formData.tutoring_mode?.includes('Online Tutoring') === true && formData.tutoring_mode?.length === 1 ? (
+                {formData.tutoring_mode?.includes("Online Tutoring") === true &&
+                formData.tutoring_mode?.length === 1 ? (
                   <div className="form-group">
                     <label htmlFor="city" className="required">
                       City
                     </label>
-                    <select id="city" name="city" value={formData.city} onChange={handleChange} required>
+                    <select
+                      id="city"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      required
+                    >
                       <option value="">Select City</option>
                       {cities.map((city) => (
                         <option key={city} value={city}>
@@ -470,46 +531,53 @@ export default function StudentAccount() {
                       ))}
                     </select>
                   </div>
-                ) : <>
-                  <div className='grid-2'>
-                    <div className="form-group">
-                      <label htmlFor="city" className="required">
-                        City
-                      </label>
-                      <select id="city" name="city" value={formData.city} onChange={handleChange} required>
-                        <option value="">Select City</option>
-                        {cities.map((city) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
+                ) : (
+                  <>
+                    <div className="grid-2">
+                      <div className="form-group">
+                        <label htmlFor="city" className="required">
+                          City
+                        </label>
+                        <select
+                          id="city"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select City</option>
+                          {cities.map((city) => (
+                            <option key={city} value={city}>
+                              {city}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="pincodes" className="required">
+                          Preferred Pincode
+                        </label>
+                        <input
+                          id="pincodes"
+                          name="pincodes"
+                          placeholder="Pin code"
+                          value={
+                            (formData.pincodes || "")
+                              .replace(/[^0-9,]/g, "") // allow only digits and commas
+                              .replace(/(,{2,})/g, ",") // collapse multiple commas
+                              .replace(/^,|,$/g, "") // trim leading/trailing commas
+                              .replace(/(\d{6})(?=\d)/g, "$1,") // insert comma after every 6 digits if missing
+                          }
+                          maxLength={6}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
                     </div>
-                    <div className="form-group">
-                      <label htmlFor="pincodes" className="required">
-                        Preferred Pincode
-                      </label>
-                      <input
-                        id="pincodes"
-                        name="pincodes"
-                        placeholder="Pin code"
-                        value={
-                          (formData.pincodes || "")
-                            .replace(/[^0-9,]/g, "") // allow only digits and commas
-                            .replace(/(,{2,})/g, ",") // collapse multiple commas
-                            .replace(/^,|,$/g, "") // trim leading/trailing commas
-                            .replace(/(\d{6})(?=\d)/g, "$1,") // insert comma after every 6 digits if missing
-                        }
-                        maxLength={6}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </>}
+                  </>
+                )}
 
-
-                <p className='header-title'>Schedule & Availability</p>
+                <p className="header-title">Schedule & Availability</p>
 
                 <div className="form-group">
                   <label htmlFor="availability" className="required">
@@ -520,32 +588,44 @@ export default function StudentAccount() {
                     id="availability"
                     name="availability"
                     readOnly
-                    onClick={() => handleSetSelectingAvailability('combined', true)}
+                    onClick={() =>
+                      handleSetSelectingAvailability("combined", true)
+                    }
                     value={
-                      (formData.avl_days || []).length > 0 && (formData.avl_time || []).length > 0
-                        ? `${formData.avl_days.join(', ')} · ${formData.avl_time.join(', ')}`
+                      (formData.avl_days || []).length > 0 &&
+                      (formData.avl_time || []).length > 0
+                        ? `${formData.avl_days.join(", ")} · ${formData.avl_time.join(", ")}`
                         : "" // Let placeholder do the work
                     }
                     placeholder="Select your available days and times"
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                     required
                   />
                 </div>
-
               </div>
             </>
           )}
         </form>
         {/* Reverted to your original button */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignContent: 'end',
-          marginLeft: 'auto',
-          gap: '16px'
-        }}>
-          <button className='secondary-btn' type="button" onClick={() => navigate('/')}>Explore Tutors</button>
-        <button className='save-btn' onClick={submitForm}>Save Changes</button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignContent: "end",
+            marginLeft: "auto",
+            gap: "16px",
+          }}
+        >
+          <button
+            className="secondary-btn"
+            type="button"
+            onClick={() => navigate("/")}
+          >
+            Explore Tutors
+          </button>
+          <button className="save-btn" onClick={submitForm}>
+            Save Changes
+          </button>
         </div>
       </main>
       <SlotSelector
@@ -553,7 +633,7 @@ export default function StudentAccount() {
         initialSlots={formData.avl_time || []}
         onSelectionChange={(data) => {
           setSelectingAvailability(false);
-          setFormData((form) => ({ ...form, ...data }))
+          setFormData((form) => ({ ...form, ...data }));
         }}
         show={selectingAvailability}
       />
@@ -564,15 +644,17 @@ export default function StudentAccount() {
         confirmText={dialogData.confirmText}
         cancelText="Cancel"
         confirmColor={dialogData.color}
-        onConfirm={dialogData.onConfirm ||(() => {
-          setShowDialog(false);
-          if (dialogData.confirmText === 'Back To Search') {
-          navigate('/');
-          }
-        })}
+        onConfirm={
+          dialogData.onConfirm ||
+          (() => {
+            setShowDialog(false);
+            if (dialogData.confirmText === "Back To Search") {
+              navigate("/");
+            }
+          })
+        }
         onCancel={() => setShowDialog(false)}
       />
     </div>
   );
 }
-

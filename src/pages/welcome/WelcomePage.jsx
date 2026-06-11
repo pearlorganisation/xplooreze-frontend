@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import React from "react";
+import { useEffect, useState, useRef } from "react";
 import "./WelcomePage.css";
 import BlogCard from "../../components/blog/BlogCard";
 import HeaderTitle from "../../components/header-title/HeaderTitle";
