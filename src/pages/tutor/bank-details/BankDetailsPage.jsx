@@ -1,10 +1,6 @@
 import './BankDetailsPage.css'; // <-- Import the page-specific CSS
 import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import React, { useState, useEffect } from 'react';
-import React from "react";
-import "./BankDetailsPage.css"; // <-- Import the page-specific CSS
-import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'; 
 // Corrected import path
 import {
   getBankDetails,

@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import "./researchForm.css";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";

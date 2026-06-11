@@ -1,22 +1,8 @@
-import './PaymentsPage.css';
-import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import React, { useState, useEffect } from 'react';
-import { getTransactions, getDashboardInsights } from '../../../data/modules/tutor-module';
-import { FaCoins, FaHistory, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { FaCoins, FaHistory, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./PaymentsPage.css";
 import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
-import { useState, useEffect } from "react";
-import {
-  getTransactions,
-  getDashboardInsights,
-} from "../../../data/modules/tutor-module";
-import {
-  FaCoins,
-  FaHistory,
-  FaChevronLeft,
-  FaChevronRight,
-} from "react-icons/fa";
+import { getTransactions, getDashboardInsights } from "../../../data/modules/tutor-module";
 export function PaymentsPage() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [transactions, setTransactions] = useState([]);

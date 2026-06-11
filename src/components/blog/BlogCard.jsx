@@ -1,8 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-import './BlogCard.css'
-import React from 'react';
-
-"use client";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./BlogCard.css";

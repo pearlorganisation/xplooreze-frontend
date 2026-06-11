@@ -1,5 +1,4 @@
 import React, { Suspense, lazy } from "react";
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -47,16 +46,11 @@ import SubCategoryPage from "./pages/student/category/SubCategoryPage";
 import CategoryPage from "./pages/student/category/CategoryPage";
 import AiNoteMakerPage from "./pages/ai-note-maker/AiNoteMakerPage";
 import { useAuth } from "./hooks/AuthProvider";
-
-function AppContent() {
-  const location = useLocation();
-  const { isLoggedIn, user } = useAuth();
 import FaqSection from "./components/FaqSection";
 
 function AppContent() {
   const location = useLocation();
-  // const pathSegments = location.pathname.split("/").filter(Boolean);
-  //ssd
+  const { isLoggedIn, user } = useAuth();
 
   const pageRequiringNavBar = [
     "/welcome",

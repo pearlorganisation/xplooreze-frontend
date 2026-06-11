@@ -1,15 +1,11 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/AuthProvider";
 import Loading from "./loading/Loading";
-import React from "react";
 import {
   clearPostLoginReturnMarkers,
   getPostLoginRedirectPathOrNull,
 } from "../utils/aiNoteMakerLoginReturn";
-import React from "react"
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthProvider';
-import Loading from './loading/Loading';
 
 const AntiProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();

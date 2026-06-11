@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from "react";
-import './Policies.css';
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import "./Policies.css";
 import { getCancellationRefundPolicy } from "../../data/modules/dynamic-module";
 import HeaderTitle from "../../components/header-title/HeaderTitle";

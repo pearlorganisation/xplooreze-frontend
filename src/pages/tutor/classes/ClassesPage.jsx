@@ -1,12 +1,6 @@
-import './ClassesPage.css';
-import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import React, { useEffect, useState } from 'react';
-import { getBookings } from '../../../data/modules/tutor-module';
-import BookingCard from '../../../components/booking-card/BookingCard';
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./ClassesPage.css";
 import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
-import { useEffect, useState } from "react";
 import { getBookings } from "../../../data/modules/tutor-module";
 import BookingCard from "../../../components/booking-card/BookingCard";
 

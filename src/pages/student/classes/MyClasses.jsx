@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BookingCard from '../../../components/booking-card/BookingCard';
 import { getBookings } from '../../../data/modules/student-module'; // Adjust path as needed
-import Loading from '../../../components/loading/Loading';
-import React from "react";
-import { useState, useEffect } from "react";
-import BookingCard from "../../../components/booking-card/BookingCard";
-import { getBookings } from "../../../data/modules/student-module"; // Adjust path as needed
-import Loading from "../../../components/loading/Loading";
+import Loading from '../../../components/loading/Loading'; 
 
 export default function MyClasses() {
   const [filteredBookings, setFilteredBookings] = useState([]);

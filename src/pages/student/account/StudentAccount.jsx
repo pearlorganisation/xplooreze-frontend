@@ -1,37 +1,20 @@
-import './StudentAccount.css';
-import { useAuth } from '../../../hooks/AuthProvider';
-import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import React, { useEffect, useRef, useState } from 'react';
-import { FaEdit, FaRegEdit, FaSignOutAlt, FaUserEdit } from 'react-icons/fa';
-import ConfirmDialog from '../../../components/dialog/ConfirmDialog';
-import { getCitiesByState, getCountries, getStatesByCountry } from '../../../data/modules/location-module';
-import MultiSelect from '../../../components/multiselect/MultiSelect';
-import { getCategories, getSubCategories } from '../../../data/modules/dynamic-module';
-import { submitStudentForm, submitTutorForm } from '../../../data/modules/auth-module';
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaEdit, FaRegEdit, FaSignOutAlt, FaUserEdit } from "react-icons/fa";
 import "./StudentAccount.css";
 import { useAuth } from "../../../hooks/AuthProvider";
 import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
-import { useEffect, useRef, useState } from "react";
-import { FaEdit, FaRegEdit, FaSignOutAlt, FaUserEdit } from "react-icons/fa";
 import ConfirmDialog from "../../../components/dialog/ConfirmDialog";
+import MultiSelect from "../../../components/multiselect/MultiSelect";
+import Loading from "../../../components/loading/Loading";
+import SlotSelector from "../../../components/slot_selector/slot_selector";
 import {
   getCitiesByState,
   getCountries,
   getStatesByCountry,
 } from "../../../data/modules/location-module";
-import MultiSelect from "../../../components/multiselect/MultiSelect";
-import {
-  getCategories,
-  getSubCategories,
-} from "../../../data/modules/dynamic-module";
-import {
-  submitStudentForm,
-  submitTutorForm,
-} from "../../../data/modules/auth-module";
-import Loading from "../../../components/loading/Loading";
-import SlotSelector from "../../../components/slot_selector/slot_selector";
-import { useNavigate } from "react-router-dom";
+import { getCategories, getSubCategories } from "../../../data/modules/dynamic-module";
+import { submitStudentForm, submitTutorForm } from "../../../data/modules/auth-module";
 
 export default function StudentAccount() {
   const navigate = useNavigate();

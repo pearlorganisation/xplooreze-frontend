@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import './TermsPage.css';
-import React from "react";
-import { useEffect, useState } from "react";
-import "./TermsPage.css";
+import './TermsPage.css';  
 import { getPrivacy, getTerms } from "../../data/modules/dynamic-module";
 import HeaderTitle from "../../components/header-title/HeaderTitle";
 

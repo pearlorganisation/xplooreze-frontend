@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
-import React from "react";
-("use client");
-import { useEffect, useState } from "react";
-import BlogCard from "../../components/blog/BlogCard";
-import "./BlogPage.css";
 import ReactPaginate from "react-paginate";
-import { APP_NAME } from "../../data/config";
+import BlogCard from "../../components/blog/BlogCard";
 import HeaderTitle from "../../components/header-title/HeaderTitle";
+import { APP_NAME } from "../../data/config";
 import { getBlogs } from "../../data/modules/blog-module";
+import "./BlogPage.css";
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState([]);

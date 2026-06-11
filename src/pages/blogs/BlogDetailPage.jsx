@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom";
 import "./BlogDetailPage.css";
 import { getBlog } from "../../data/modules/blog-module";

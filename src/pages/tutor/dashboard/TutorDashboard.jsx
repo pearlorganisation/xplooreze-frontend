@@ -3,14 +3,7 @@ import './TutorDashboard.css';
 import { FaUsers, FaExchangeAlt, FaCoins, FaEye } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/AuthProvider';
-import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import React from "react";
-import { useEffect, useRef, useState } from "react";
-import "./TutorDashboard.css";
-import { FaUsers, FaExchangeAlt, FaCoins, FaEye } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../hooks/AuthProvider";
-import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
+import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar'; 
 // --- Added API imports ---
 import {
   getBookings,

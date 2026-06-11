@@ -1,1 +1,0 @@
-{"version":3,"file":"browser-D8h1r8tq.js","sources":["../../node_modules/form-data/lib/browser.js"],"sourcesContent":["'use strict';\n\n/* eslint-env browser */\nmodule.exports = typeof self === 'object' ? self.FormData : window.FormData;\n"],"names":["browser"],"mappings":"kaAGAA,EAAiB,OAAO,MAAS,SAAW,KAAK,SAAW,OAAO","x_google_ignoreList":[0]}

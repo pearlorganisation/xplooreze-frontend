@@ -2,17 +2,8 @@ import './VerificationPage.css';
 import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../hooks/AuthProvider'; 
-import { submitTutorForm } from '../../../data/modules/auth-module'; 
-import Loading from "../../../components/loading/Loading"; 
-import { useNavigate } from 'react-router-dom';
-import React from "react";
-import "./VerificationPage.css";
-import TutorSidebar from "../../../components/tutor-sidebar/TutorSidebar";
-import { useState, useEffect } from "react";
-import { useAuth } from "../../../hooks/AuthProvider";
-import { submitTutorForm } from "../../../data/modules/auth-module";
-import Loading from "../../../components/loading/Loading";
-import { useNavigate } from "react-router-dom";
+import { submitTutorForm } from '../../../data/modules/auth-module';  
+import { useNavigate } from 'react-router-dom';  
 
 const initialFormData = {
   certificates: [],

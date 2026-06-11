@@ -1,18 +1,5 @@
 import React, { useState } from "react";
 import { FaRegSun, FaSun, FaRegSmileBeam, FaRegMoon, FaCloud, FaMoon, FaBed, FaCross, FaTimes } from "react-icons/fa";
-import React from "react";
-import { useState } from "react";
-import {
-  FaRegSun,
-  FaSun,
-  FaRegSmileBeam,
-  FaRegMoon,
-  FaCloud,
-  FaMoon,
-  FaBed,
-  FaCross,
-  FaTimes,
-} from "react-icons/fa";
 import { WiSunrise } from "react-icons/wi";
 import "./slot_selector.css";
 

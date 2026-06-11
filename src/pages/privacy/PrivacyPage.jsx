@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import './PrivacyPage.css';
-import React from "react";
-import { useEffect, useState } from "react";
-import "./PrivacyPage.css";
+import './PrivacyPage.css';  
 import { getPrivacy } from "../../data/modules/dynamic-module";
 import HeaderTitle from "../../components/header-title/HeaderTitle";
 
