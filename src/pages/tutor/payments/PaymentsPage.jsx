@@ -1,6 +1,6 @@
 import './PaymentsPage.css';
 import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getTransactions, getDashboardInsights } from '../../../data/modules/tutor-module';
 import { FaCoins, FaHistory, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 export function PaymentsPage() {

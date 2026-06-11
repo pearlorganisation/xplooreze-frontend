@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './TutorDashboard.css';
 import { FaUsers, FaExchangeAlt, FaCoins, FaEye } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';

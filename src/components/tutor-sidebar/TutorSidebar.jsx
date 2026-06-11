@@ -1,15 +1,13 @@
-import { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import './TutorSidebar.css';
 import { 
     FaChalkboardTeacher, 
     FaMoneyBill, 
     FaTachometerAlt, 
     FaTools, 
-    FaUserGraduate, 
     FaUserPlus,
     FaLandmark // <-- Added new icon
 } from 'react-icons/fa';
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function TutorSidebar({ showSidebar, setShowSidebar }) {

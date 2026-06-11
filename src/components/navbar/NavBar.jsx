@@ -1,9 +1,10 @@
 // NavBar.jsx
 import "./NavBar.css";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { APP_NAME } from "../../data/config.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { setPostLoginReturnIfOnAiNoteMaker } from "../../utils/aiNoteMakerLoginReturn";
 
 function NavBar() {
   const [open, setOpen] = useState(false);
@@ -90,6 +91,14 @@ function NavBar() {
               Blogs
             </Link>
           </li>
+          <li>
+            <Link 
+              to="/ai-note-maker"
+              className={`nav-link ${location.pathname === "/ai-note-maker" ? "active" : ""}`}
+            >
+              AI Note Maker
+            </Link>
+          </li>
         </ul>
       </div>
 
@@ -97,7 +106,10 @@ function NavBar() {
         <div className="nav-actions">
           <button
             className="login-btn"
-            onClick={() => navigate("/authentication?authtype=login")}
+            onClick={() => {
+              setPostLoginReturnIfOnAiNoteMaker(location.pathname);
+              navigate("/authentication?authType=login&userRole=student");
+            }}
           >
             Log In
           </button>

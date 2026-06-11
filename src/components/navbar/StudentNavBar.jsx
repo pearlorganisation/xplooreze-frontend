@@ -1,6 +1,6 @@
 // NavBar.jsx
 import "./NavBar.css";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { APP_NAME } from "../../data/config.js";
 import { Link, useLocation, useMatch } from "react-router-dom";
@@ -9,17 +9,11 @@ import NavBar from "./NavBar.jsx";
 
 function StudentNavBar() {
   const { user, isLoggedIn } = useAuth();
-
-  if (!isLoggedIn) {
-    return <NavBar />;
-  }
-
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const isDashboardActive = pathSegments.length === 3;
-
   const isSearchPage = useMatch("/:category/:mode/:subject");
 
   useEffect(() => {
@@ -34,6 +28,10 @@ function StudentNavBar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  if (!isLoggedIn) {
+    return <NavBar />;
+  }
 
   return (
     <nav className="navbar">
@@ -99,6 +97,14 @@ function StudentNavBar() {
               className={`nav-link ${location.pathname === "/phd-mentorship" ? "active" : ""}`}
             >
               PhD Mentorship
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/ai-note-maker"
+              className={`nav-link ${location.pathname === "/ai-note-maker" ? "active" : ""}`}
+            >
+              AI Note Maker
             </Link>
           </li>
         </ul>

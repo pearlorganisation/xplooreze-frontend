@@ -1,3 +1,4 @@
+import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -36,16 +37,19 @@ import CancellationRefundPolicy from "./pages/policies/CancellationRefundPolicy"
 import ShippingPolicy from "./pages/policies/ShippingPolicy";
 import TutorDetail from "./pages/student/tutor-details/TutorDetails";
 import FavouriteTutors from "./pages/student/favourites/FavouriteTutors";
-import VideoCall from "./pages/videocall/VideoCall";
+import Loading from "./components/loading/Loading";
 import { BankDetailsPage } from "./pages/tutor/bank-details/BankDetailsPage";
+
+const VideoCall = lazy(() => import("./pages/videocall/VideoCall"));
 import { VerificationPage } from "./pages/tutor/verification-page/VerificationPage";
 import SubCategoryPage from "./pages/student/category/SubCategoryPage";
 import CategoryPage from "./pages/student/category/CategoryPage";
+import AiNoteMakerPage from "./pages/ai-note-maker/AiNoteMakerPage";
+import { useAuth } from "./hooks/AuthProvider";
 
 function AppContent() {
   const location = useLocation();
-  // const pathSegments = location.pathname.split("/").filter(Boolean);
-  //s
+  const { isLoggedIn, user } = useAuth();
 
   const pageRequiringNavBar = [
     "/welcome",
@@ -59,6 +63,7 @@ function AppContent() {
     "/shipping-policy",
     "/about-us",
     "/phd-mentorship",
+    "/ai-note-maker",
   ];
   const hideNav = !pageRequiringNavBar.some((el) =>
     location.pathname.includes(el),
@@ -87,9 +92,12 @@ function AppContent() {
           location.pathname === "/welcome" ? "app-container" : "container"
         }
       >
-        {!hideNav && <NavBar />}
-        {!hideStudentNav && <StudentNavBar />}
-        {/* <StudentNavBar /> */}
+        {isLoggedIn && user?.role === "student" ? (
+          <StudentNavBar />
+        ) : (
+          !hideNav && <NavBar />
+        )}
+        {!isLoggedIn && !hideStudentNav && <StudentNavBar />}
         <ScrollToTop />
         <Routes>
           <Route
@@ -168,7 +176,9 @@ function AppContent() {
             path="/video-call/:id"
             element={
               <ProtectedRoute>
-                <VideoCall />
+                <Suspense fallback={<Loading />}>
+                  <VideoCall />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -228,6 +238,7 @@ function AppContent() {
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsPage />} />
           <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="/ai-note-maker" element={<AiNoteMakerPage />} />
           <Route
             path="/authentication/*"
             element={

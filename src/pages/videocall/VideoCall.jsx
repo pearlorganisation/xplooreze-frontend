@@ -447,7 +447,9 @@ export default function VideoCall() {
       setRefundLoading(true);
       await requestRefund({ bookingId: booking._id, reason: refundReason.trim() });
       setShowRefundModal(false);
-      alert('Refund request submitted. It will be processed after admin approval.');
+      alert(
+        'At Xplooreze, we value long-term trust over short-term transactions, and we appreciate your patience while we investigate this properly.\n\nYou will receive an update within [24–48 hours].',
+      );
       navigate(-1);
     } catch (e) {
       alert(e?.message || String(e) || 'Failed to submit refund request.');

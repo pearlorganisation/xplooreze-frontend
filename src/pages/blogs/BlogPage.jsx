@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import BlogCard from "../../components/blog/BlogCard";
 import './BlogPage.css';
 import ReactPaginate from "react-paginate";

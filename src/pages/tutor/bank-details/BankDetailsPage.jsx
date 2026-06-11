@@ -1,6 +1,6 @@
 import './BankDetailsPage.css'; // <-- Import the page-specific CSS
 import TutorSidebar from '../../../components/tutor-sidebar/TutorSidebar';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // Corrected import path
 import { getBankDetails, saveBankDetails } from '../../../data/modules/tutor-module';
 import Loading from "../../../components/loading/Loading"; 

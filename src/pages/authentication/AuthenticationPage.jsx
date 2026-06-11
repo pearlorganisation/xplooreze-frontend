@@ -37,7 +37,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function AuthenticationPage() {
   const [isStudentOfOnlineTutoring, setIsStudentOfOnlineTutoring] = useState();
-  const { setIsLoggedIn, setUser, logout } = useAuth(false);
+  const { setIsLoggedIn, setUser, logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -378,7 +378,6 @@ export default function AuthenticationPage() {
             // Correct login (login page or matching registration role)
             setUser(result);
             setIsLoggedIn(true);
-            navigate("/");
           } else {
             // Registration role mismatch (e.g., trying to register as tutor but has student account)
             await logout();
@@ -399,7 +398,6 @@ export default function AuthenticationPage() {
               // If they are registering as a student, log them in immediately.
               setUser(result);
               setIsLoggedIn(true);
-              navigate("/"); // Go straight to homepage
             } else {
               // If they are registering as a TUTOR, go to step 2
               setFormData((prev) => ({
@@ -418,7 +416,6 @@ export default function AuthenticationPage() {
               // Per new request, just log them in.
               setUser(result);
               setIsLoggedIn(true);
-              navigate("/");
             } else {
               // They are on the login page, have a tutor account (form not submitted), OR no account.
               // In either case, show "Account Not Found" because they can't log in.
@@ -549,7 +546,6 @@ export default function AuthenticationPage() {
 
       setUser(result);
       setIsLoggedIn(true);
-      navigate("/");
     } catch (error) {
       showErrorDialog("Account Creation Failed", error.toString());
     }

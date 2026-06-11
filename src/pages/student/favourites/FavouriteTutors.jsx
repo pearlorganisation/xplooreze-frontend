@@ -1,5 +1,5 @@
 import './FavouriteTutors.css';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getFavorites } from "../../../data/modules/student-module";
 import TutorCard from "../../../components/tutor-card/TutorCard";
 import Loading from "../../../components/loading/Loading";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import './Policies.css';
 import { getShippingPolicy } from "../../data/modules/dynamic-module";
 import HeaderTitle from "../../components/header-title/HeaderTitle";

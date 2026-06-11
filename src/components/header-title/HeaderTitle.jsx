@@ -1,5 +1,5 @@
 import './HeaderTitle.css';
-
+import React from 'react';
 export default function ({ title, description }) {
     return (
         <div className="header-title">

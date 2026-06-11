@@ -1,0 +1,269 @@
+.ai-note-maker {
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: start;
+  color: var(--brand-black);
+  font-family: var(--font-family);
+}
+
+.ai-note-maker__header {
+  margin-bottom: var(--space-6);
+}
+
+.ai-note-maker__header .header-title {
+  text-align: center;
+}
+
+.ai-note-maker__grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .ai-note-maker__grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.ai-note-maker__panel {
+  background: var(--brand-white, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: var(--space-5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.ai-note-maker__label {
+  display: block;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-semibold, 600);
+  margin-bottom: var(--space-2);
+  color: var(--brand-black);
+}
+
+.ai-note-maker__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  font-size: var(--font-size-md, 1rem);
+  margin-bottom: var(--space-4);
+  font-family: inherit;
+}
+
+.ai-note-maker__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  font-size: var(--font-size-md, 1rem);
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 280px;
+  font-family: inherit;
+}
+
+.ai-note-maker__meta {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: rgba(0, 0, 0, 0.55);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.ai-note-maker__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.ai-note-maker__output-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.ai-note-maker__output-title {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-bold, 700);
+}
+
+.ai-note-maker__output-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ai-note-maker__btn {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  transition: opacity 0.15s ease;
+}
+
+.ai-note-maker__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ai-note-maker__btn--primary {
+  background: var(--brand-primary, #2563eb);
+  color: #fff;
+}
+
+.ai-note-maker__btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.ai-note-maker__btn--secondary {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--brand-black);
+}
+
+.ai-note-maker__btn--secondary:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.ai-note-maker__btn--ghost {
+  background: transparent;
+  color: var(--brand-black);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.ai-note-maker__btn--ghost:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ai-note-maker__pre {
+  margin: 0;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 200px;
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  color: var(--brand-black);
+}
+
+.ai-note-maker__md {
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  min-height: 200px;
+  max-height: min(60vh, 520px);
+  overflow: auto;
+  color: var(--brand-black);
+  position: relative;
+}
+
+.ai-note-maker__md--locked {
+  max-height: 260px;
+  overflow: hidden;
+}
+
+.ai-note-maker__md-lock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 35%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.ai-note-maker__unlock {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px dashed rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.ai-note-maker__unlock-text {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.ai-note-maker__md-placeholder {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.ai-note-maker__md :is(h1, h2, h3) {
+  line-height: 1.25;
+  margin: 0.9em 0 0.35em;
+}
+
+.ai-note-maker__md h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-top: 0;
+}
+
+.ai-note-maker__md h2 {
+  font-size: 1.15rem;
+  font-weight: 750;
+}
+
+.ai-note-maker__md h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.ai-note-maker__md p {
+  margin: 0.5em 0;
+  line-height: 1.65;
+}
+
+.ai-note-maker__md ul,
+.ai-note-maker__md ol {
+  margin: 0.5em 0 0.75em;
+  padding-left: 1.2em;
+}
+
+.ai-note-maker__md li {
+  margin: 0.25em 0;
+}
+
+.ai-note-maker__md strong {
+  font-weight: 750;
+}
+
+.ai-note-maker__md code {
+  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+  font-size: 0.92em;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.12em 0.35em;
+  border-radius: 6px;
+}

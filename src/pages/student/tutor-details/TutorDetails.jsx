@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./TutorDetail.css";
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 // --- 1. IMPORT checkTrialAvailability ---
 import {
   bookTutor,
@@ -25,6 +25,40 @@ import { useAuth } from "../../../hooks/AuthProvider";
 import StarRating from "../../../components/star-rating/StarRating";
 
 const safeArray = (data) => (Array.isArray(data) ? data : []);
+
+/** Earliest bookable clock time (HH:mm) when session starts *today* in local timezone. */
+const MIN_BOOKING_LEAD_HOURS = 2;
+
+function toLocalYmdKey(d) {
+  if (!d || !(d instanceof Date) || Number.isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function getEarliestStartHHmmIfToday(selectedDate) {
+  if (!selectedDate || !(selectedDate instanceof Date) || Number.isNaN(selectedDate.getTime())) {
+    return null;
+  }
+  const now = new Date();
+  if (toLocalYmdKey(selectedDate) !== toLocalYmdKey(now)) {
+    return null;
+  }
+  const earliest = new Date(now.getTime() + MIN_BOOKING_LEAD_HOURS * 60 * 60 * 1000);
+  if (toLocalYmdKey(earliest) !== toLocalYmdKey(selectedDate)) {
+    return null;
+  }
+  return `${String(earliest.getHours()).padStart(2, "0")}:${String(earliest.getMinutes()).padStart(2, "0")}`;
+}
+
+/** True when date is "today" but no clock time on that day can satisfy lead hours (crosses midnight). */
+function isTodayButNoClockSlotPossible(selectedDate) {
+  if (!selectedDate || !(selectedDate instanceof Date) || Number.isNaN(selectedDate.getTime())) {
+    return false;
+  }
+  const now = new Date();
+  if (toLocalYmdKey(selectedDate) !== toLocalYmdKey(now)) return false;
+  const earliest = new Date(now.getTime() + MIN_BOOKING_LEAD_HOURS * 60 * 60 * 1000);
+  return toLocalYmdKey(earliest) !== toLocalYmdKey(selectedDate);
+}
 
 // --- Helper functions for date formatting (Unchanged) ---
 const formatDateRange = (start, end) => {
@@ -315,6 +349,66 @@ export default function TutorDetail() {
     }
   }, [tutoringModes]);
 
+  const isSingleSessionForTime =
+    isTrial || bookingForm.sessionType === "single";
+  const earliestBookableHHmm = useMemo(() => {
+    const selectedStart = isSingleSessionForTime
+      ? bookingForm.dateRange
+      : bookingForm.dateRange?.[0];
+    return getEarliestStartHHmmIfToday(selectedStart);
+  }, [isTrial, bookingForm.sessionType, bookingForm.dateRange]);
+
+  const todayNoClockSlots = useMemo(() => {
+    const selectedStart = isSingleSessionForTime
+      ? bookingForm.dateRange
+      : bookingForm.dateRange?.[0];
+    return isTodayButNoClockSlotPossible(selectedStart);
+  }, [isTrial, bookingForm.sessionType, bookingForm.dateRange]);
+
+  /** If user picks "today" and had an earlier time, clear it (e.g. after changing date). */
+  useEffect(() => {
+    if (todayNoClockSlots) {
+      setBookingForm((prev) => {
+        if (!prev.startTime && !prev.endTime) return prev;
+        return { ...prev, startTime: "", endTime: "" };
+      });
+      setTimeError(
+        `Not enough time left today — pick tomorrow or later (need ${MIN_BOOKING_LEAD_HOURS}+ hours notice).`,
+      );
+      return;
+    }
+
+    setTimeError((err) =>
+      err.startsWith("Not enough time left today") ? "" : err,
+    );
+
+    const minStr = earliestBookableHHmm;
+    if (!minStr) {
+      setTimeError((err) =>
+        err.includes("Today's first slot must be") ? "" : err,
+      );
+      return;
+    }
+
+    const { startTime } = bookingForm;
+    if (startTime && startTime < minStr) {
+      setBookingForm((prev) => ({ ...prev, startTime: "", endTime: "" }));
+      if (isTrial) {
+        setTimeError(
+          `Today's first slot must be ${minStr} or later (at least ${MIN_BOOKING_LEAD_HOURS} hours from now).`,
+        );
+      } else {
+        setTimeError("");
+      }
+    }
+  }, [
+    earliestBookableHHmm,
+    todayNoClockSlots,
+    isTrial,
+    bookingForm.startTime,
+    bookingForm.endTime,
+  ]);
+
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     let newForm = { ...bookingForm, [name]: value };
@@ -330,12 +424,30 @@ export default function TutorDetail() {
       }
     }
 
+    if (
+      !isTrial &&
+      name === "startTime" &&
+      earliestBookableHHmm &&
+      value &&
+      value < earliestBookableHHmm
+    ) {
+      setTimeError(
+        `Today's first slot must be ${earliestBookableHHmm} or later (at least ${MIN_BOOKING_LEAD_HOURS} hours from now).`,
+      );
+      newForm.endTime = "";
+    }
+
     if (isTrial && name === "startTime") {
       if (value) {
         const [hours, minutes] = value.split(":").map(Number);
 
-        // Check if time is past 23:34
-        if (hours === 23 && minutes > 34) {
+        if (earliestBookableHHmm && value < earliestBookableHHmm) {
+          setTimeError(
+            `Today's first slot must be ${earliestBookableHHmm} or later (at least ${MIN_BOOKING_LEAD_HOURS} hours from now).`,
+          );
+          newForm.endTime = "";
+        } else if (hours === 23 && minutes > 34) {
+          // Check if time is past 23:34
           // --- 1. UPDATE ERROR MESSAGE ---
           setTimeError(
             "Trial start time must be before 23:35. To book a later time, please select the next day.",
@@ -343,13 +455,16 @@ export default function TutorDetail() {
           newForm.endTime = ""; // Clear end time
         } else {
           setTimeError(""); // Clear error
-          const startDate = new Date();
-          startDate.setHours(hours);
-          startDate.setMinutes(minutes);
-          startDate.setSeconds(0);
-          startDate.setMilliseconds(0);
+          const sessionBase =
+            bookingForm.dateRange instanceof Date &&
+            !Number.isNaN(bookingForm.dateRange.getTime())
+              ? new Date(bookingForm.dateRange)
+              : new Date();
+          sessionBase.setHours(hours, minutes, 0, 0);
+          sessionBase.setSeconds(0);
+          sessionBase.setMilliseconds(0);
 
-          const endDate = new Date(startDate.getTime() + 25 * 60 * 1000);
+          const endDate = new Date(sessionBase.getTime() + 25 * 60 * 1000);
 
           const endHours = endDate.getHours().toString().padStart(2, "0");
           const endMinutes = endDate.getMinutes().toString().padStart(2, "0");
@@ -455,8 +570,28 @@ export default function TutorDetail() {
         }
       }
 
+      if (todayNoClockSlots) {
+        setSubmitError(
+          `Not enough time left today for a ${MIN_BOOKING_LEAD_HOURS}-hour notice slot. Please pick tomorrow or a later date.`,
+        );
+        setShowForm(false);
+        return;
+      }
+
       if (!bookingForm.startTime) {
         setSubmitError("Please select a start time.");
+        setShowForm(false);
+        return;
+      }
+
+      const selectedStartForMin = isSingleSession
+        ? bookingForm.dateRange
+        : bookingForm.dateRange?.[0];
+      const minHHmm = getEarliestStartHHmmIfToday(selectedStartForMin);
+      if (minHHmm && bookingForm.startTime < minHHmm) {
+        setSubmitError(
+          `When booking for today, start time must be ${minHHmm} or later (at least ${MIN_BOOKING_LEAD_HOURS} hours from now).`,
+        );
         setShowForm(false);
         return;
       }
@@ -1181,7 +1316,9 @@ export default function TutorDetail() {
                             name="startTime"
                             value={bookingForm.startTime}
                             onChange={handleFormChange}
+                            min={earliestBookableHHmm || undefined}
                             max={isTrial ? "23:34" : undefined}
+                            disabled={todayNoClockSlots}
                             required
                           />
                           {!isTrial && (
@@ -1192,12 +1329,44 @@ export default function TutorDetail() {
                                 name="endTime"
                                 value={bookingForm.endTime}
                                 onChange={handleFormChange}
+                                min={
+                                  bookingForm.startTime ||
+                                  earliestBookableHHmm ||
+                                  undefined
+                                }
+                                disabled={todayNoClockSlots}
                                 required
                               />
                             </>
                           )}
                         </div>
-                        {isTrial && timeError && (
+                        {todayNoClockSlots && (
+                          <div
+                            className="form-error-message"
+                            style={{
+                              color: "red",
+                              fontSize: "0.9rem",
+                              marginTop: "5px",
+                            }}
+                          >
+                            Not enough time left today — pick tomorrow or later
+                            (need {MIN_BOOKING_LEAD_HOURS}+ hours notice).
+                          </div>
+                        )}
+                        {earliestBookableHHmm && !todayNoClockSlots && (
+                          <div
+                            className="form-hint"
+                            style={{
+                              fontSize: "0.85rem",
+                              color: "#555",
+                              marginTop: "6px",
+                            }}
+                          >
+                            Today: earliest start is {earliestBookableHHmm}{" "}
+                            (at least {MIN_BOOKING_LEAD_HOURS} hours from now).
+                          </div>
+                        )}
+                        {timeError && (
                           <div
                             className="form-error-message"
                             style={{

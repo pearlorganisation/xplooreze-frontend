@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import HeaderTitle from "../../components/header-title/HeaderTitle";
 import './AboutUsPage.css';
 import { FaChartLine, FaHeart, FaUserAlt } from "react-icons/fa";
-
+import React from 'react';  
 export default function AboutUsPage() {
     return (
         <div className="about-us">

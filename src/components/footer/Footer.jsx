@@ -1,6 +1,6 @@
 import './Footer.css';
 import { APP_NAME, CONTACT_DETAILS } from '../../data/config';
-
+import React from 'react';
 function Footer() {
     return (
         <footer className="footer">
@@ -40,8 +40,7 @@ function Footer() {
             </div>
             <div className="footer-bottom">
                 <p>© {new Date().getFullYear().toString()} {APP_NAME}. All Rights Reserved.</p>
-                <p>Created with <span className="heart">❤</span> by <a href="https://statefulcoders.com">statefulcoders</a></p>
-            </div>
+             </div>
         </footer>
     );
 }
