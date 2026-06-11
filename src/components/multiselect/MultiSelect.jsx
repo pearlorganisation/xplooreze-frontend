@@ -87,9 +87,9 @@ const MultiSelect = ({
       tabIndex="0"
       onKeyDown={handleKeyDown}
     >
-      <select name={name} multiple style={{ display: "none" }}>
+      <select name={name} multiple value={value} style={{ display: "none" }}>
         {value.map((option) => (
-          <option key={option} value={option} selected>
+          <option key={option} value={option}>
             {option}
           </option>
         ))}
